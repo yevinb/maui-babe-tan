@@ -1,178 +1,256 @@
+const VERT = `
+  attribute vec2 aPos;
+  varying vec2 vUv;
+  void main() {
+    vUv = aPos * 0.5 + 0.5;
+    gl_Position = vec4(aPos, 0.0, 1.0);
+  }
+`;
+
+const FRAG = `
+  precision mediump float;
+  uniform sampler2D uTex;
+  uniform float uTime;
+  uniform vec2 uRes;
+  varying vec2 vUv;
+
+  float wave(float x, float t, float freq, float speed, float amp) {
+    return sin(x * freq + t * speed) * amp
+         + sin(x * freq * 1.7 - t * speed * 1.3) * amp * 0.5
+         + sin(x * freq * 0.4 + t * speed * 0.6) * amp * 0.3;
+  }
+
+  void main() {
+    vec2 uv = vUv;
+    float t = uTime;
+
+    // vUv.y: 0 = bottom (sand), 1 = top (sky)
+    float skyMask = smoothstep(0.58, 0.72, uv.y);
+    float waterMask = smoothstep(0.32, 0.44, uv.y) * (1.0 - smoothstep(0.56, 0.66, uv.y));
+    float shoreMask = smoothstep(0.30, 0.40, uv.y) * (1.0 - smoothstep(0.44, 0.52, uv.y));
+    float sandMask = 1.0 - smoothstep(0.18, 0.34, uv.y);
+
+    vec2 d = uv;
+
+    // Sky — slow cloud drift
+    d.x += skyMask * sin(t * 0.12 + uv.y * 3.0) * 0.005;
+
+    // Ocean — rolling waves
+    float w = wave(uv.x, t, 18.0, 1.4, 0.014)
+            + wave(uv.x, t, 28.0, 2.0, 0.008)
+            + wave(uv.x, t, 8.0, 0.9, 0.02);
+    d.x += w * waterMask;
+    d.y += wave(uv.x, t, 22.0, 1.8, 0.008) * waterMask;
+    d.x += sin(uv.y * 30.0 + t * 1.2) * 0.004 * waterMask;
+
+    // Shore foam band
+    float foam = wave(uv.x, t, 35.0, 2.5, 0.005) + sin(uv.x * 50.0 - t * 3.0) * 0.003;
+    d.y += foam * shoreMask;
+
+    // Wet sand shimmer
+    d.x += sin(uv.x * 40.0 + t * 2.5) * 0.002 * sandMask;
+    d.y += sin(uv.x * 25.0 - t * 1.8) * 0.0015 * sandMask;
+
+    d = clamp(d, 0.001, 0.999);
+    vec3 col = texture2D(uTex, d).rgb;
+
+    // Sun glints on water
+    float glint = pow(max(0.0, sin(uv.x * 120.0 + t * 3.5) * sin(uv.y * 80.0 - t * 2.0)), 18.0);
+    col += vec3(1.0, 0.95, 0.8) * glint * waterMask * 0.35;
+
+    // Foam white wash at shore
+    float foamBright = pow(max(0.0, sin(uv.x * 60.0 - t * 2.8)), 6.0) * shoreMask;
+    col = mix(col, vec3(1.0), foamBright * 0.25);
+
+    // Warm sand pulse
+    col += vec3(0.06, 0.03, 0.0) * sandMask * sin(t * 1.5) * 0.15;
+
+    gl_FragColor = vec4(col, 1.0);
+  }
+`;
+
+function compileShader(gl, type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src);
+  gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+    console.warn('Shader compile:', gl.getShaderInfoLog(s));
+    gl.deleteShader(s);
+    return null;
+  }
+  return s;
+}
+
+function createProgram(gl, vs, fs) {
+  const v = compileShader(gl, gl.VERTEX_SHADER, vs);
+  const f = compileShader(gl, gl.FRAGMENT_SHADER, fs);
+  if (!v || !f) return null;
+  const p = gl.createProgram();
+  gl.attachShader(p, v);
+  gl.attachShader(p, f);
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
+    console.warn('Program link:', gl.getProgramInfoLog(p));
+    return null;
+  }
+  return p;
+}
+
 export function initLiveBeach(wrap) {
-  const canvas = wrap?.querySelector('#beachWater');
-  const img = wrap?.querySelector('.hero-bg-img');
-  if (!canvas || !wrap) return null;
+  if (!wrap) return null;
 
+  const video = wrap.querySelector('.hero-bg-video');
+  const img = wrap.querySelector('.hero-bg-img');
+  const canvas = wrap.querySelector('#beachWater');
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const ctx = canvas.getContext('2d', { alpha: true });
-  if (!ctx) return null;
 
-  let width = 0;
-  let height = 0;
-  let dpr = 1;
   let running = true;
   let animId;
-  let start = performance.now();
-  let waterLine = 0.38;
-  let staticDrawn = false;
+  let observer;
+  let glScene = null;
 
-  function resize() {
-    const rect = wrap.getBoundingClientRect();
-    dpr = Math.min(window.devicePixelRatio, 2);
-    width = rect.width;
-    height = rect.height;
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
-    canvas.style.width = width + 'px';
-    canvas.style.height = height + 'px';
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
+  function setupVideo() {
+    if (!video || prefersReduced) return false;
 
-  function waveY(x, t, base, amp, freq, speed) {
-    return (
-      base +
-      Math.sin(x * freq + t * speed) * amp +
-      Math.sin(x * freq * 1.8 + t * speed * 1.3) * amp * 0.45 +
-      Math.sin(x * freq * 0.5 + t * speed * 0.7) * amp * 0.25
+    const onReady = () => {
+      video.classList.add('playing');
+      img?.classList.add('hidden');
+      canvas?.classList.add('hidden');
+    };
+
+    video.addEventListener('loadeddata', onReady, { once: true });
+    video.addEventListener('canplay', onReady, { once: true });
+
+    video.muted = true;
+    video.playsInline = true;
+    video.loop = true;
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
+
+    const play = () => {
+      video.play().then(onReady).catch(() => startWebGL());
+    };
+
+    if (video.readyState >= 2) play();
+    else {
+      video.addEventListener('error', () => startWebGL(), { once: true });
+      video.addEventListener('loadeddata', play, { once: true });
+      video.load();
+      play();
+    }
+
+    observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!video) return;
+        if (entry.isIntersecting) video.play().catch(() => {});
+        else video.pause();
+      },
+      { threshold: 0.05 }
     );
+    observer.observe(wrap);
+
+    return true;
   }
 
-  function drawGlints(t) {
-    const baseY = height * waterLine;
-    const glintCount = width > 600 ? 5 : 3;
+  function startWebGL() {
+    if (!canvas || !img || glScene) return;
+    video?.classList.add('hidden');
+    img.classList.remove('hidden');
 
-    for (let i = 0; i < glintCount; i++) {
-      const phase = t * 0.4 + i * 1.7;
-      const x = ((Math.sin(phase * 0.3 + i) * 0.5 + 0.5) * width * 0.7 + width * 0.15);
-      const y = baseY + 30 + Math.sin(phase + i) * 25 + i * 18;
-      const w = 60 + Math.sin(phase * 2) * 20;
-      const grad = ctx.createLinearGradient(x - w, y, x + w, y);
-      grad.addColorStop(0, 'rgba(255,255,255,0)');
-      grad.addColorStop(0.45, 'rgba(255,248,220,0.35)');
-      grad.addColorStop(0.55, 'rgba(255,255,255,0.5)');
-      grad.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.fillStyle = grad;
-      ctx.globalAlpha = 0.25 + Math.sin(phase * 1.5) * 0.1;
-      ctx.fillRect(x - w, y - 2, w * 2, 4);
-    }
-    ctx.globalAlpha = 1;
-  }
-
-  function drawFoam(t) {
-    const shoreY = height * (waterLine + 0.06);
-    ctx.beginPath();
-    ctx.moveTo(0, height);
-    for (let x = 0; x <= width; x += 3) {
-      const y = shoreY + Math.sin(x * 0.02 + t * 1.2) * 4 + Math.sin(x * 0.05 - t * 0.8) * 2;
-      ctx.lineTo(x, y);
-    }
-    ctx.lineTo(width, height);
-    ctx.closePath();
-    const foam = ctx.createLinearGradient(0, shoreY - 10, 0, shoreY + 40);
-    foam.addColorStop(0, 'rgba(255,255,255,0.22)');
-    foam.addColorStop(0.5, 'rgba(220,240,255,0.12)');
-    foam.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = foam;
-    ctx.fill();
-  }
-
-  function drawWaves(t) {
-    const baseY = height * waterLine;
-    const layers = [
-      { amp: 16, freq: 0.008, speed: 0.9, color: 'rgba(12, 95, 140, 0.45)' },
-      { amp: 11, freq: 0.012, speed: 1.2, color: 'rgba(20, 130, 170, 0.35)' },
-      { amp: 8, freq: 0.018, speed: 1.6, color: 'rgba(40, 160, 195, 0.28)' },
-      { amp: 6, freq: 0.025, speed: 2.0, color: 'rgba(100, 210, 235, 0.22)' },
-    ];
-
-    ctx.clearRect(0, 0, width, height);
-
-    const maskGrad = ctx.createLinearGradient(0, baseY - 80, 0, baseY + 120);
-    maskGrad.addColorStop(0, 'rgba(0,0,0,0)');
-    maskGrad.addColorStop(0.15, 'rgba(0,0,0,0.6)');
-    maskGrad.addColorStop(1, 'rgba(0,0,0,1)');
-
-    layers.forEach((layer, i) => {
-      ctx.beginPath();
-      ctx.moveTo(0, height);
-      for (let x = 0; x <= width; x += 2) {
-        ctx.lineTo(x, waveY(x, t + i * 0.5, baseY + i * 6, layer.amp, layer.freq, layer.speed));
-      }
-      ctx.lineTo(width, height);
-      ctx.closePath();
-      ctx.fillStyle = layer.color;
-      ctx.fill();
-    });
-
-    ctx.globalCompositeOperation = 'destination-in';
-    ctx.fillStyle = maskGrad;
-    ctx.fillRect(0, 0, width, height);
-    ctx.globalCompositeOperation = 'source-over';
-
-    drawGlints(t);
-    drawFoam(t);
-  }
-
-  function drawStatic() {
-    ctx.clearRect(0, 0, width, height);
-    const baseY = height * waterLine;
-    const grad = ctx.createLinearGradient(0, baseY, 0, height);
-    grad.addColorStop(0, 'rgba(30, 140, 180, 0.15)');
-    grad.addColorStop(1, 'rgba(10, 80, 120, 0.25)');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, baseY, width, height - baseY);
-  }
-
-  function animate(now) {
-    if (!running) return;
-    animId = requestAnimationFrame(animate);
-    const t = (now - start) * 0.001;
-    if (prefersReduced) {
-      if (!staticDrawn) {
-        drawStatic();
-        staticDrawn = true;
-      }
+    const gl = canvas.getContext('webgl', { alpha: false, antialias: false });
+    if (!gl) {
+      canvas.classList.add('hidden');
       return;
     }
-    drawWaves(t);
-  }
 
-  function onImgLoad() {
-    resize();
-    if (img && img.naturalHeight) {
-      const ratio = img.naturalWidth / img.naturalHeight;
-      const displayRatio = width / height;
-      if (ratio > displayRatio) {
-        waterLine = 0.34;
-      } else {
-        waterLine = 0.4;
-      }
+    const program = createProgram(gl, VERT, FRAG);
+    if (!program) return;
+
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+
+    const aPos = gl.getAttribLocation(program, 'aPos');
+    const uTex = gl.getUniformLocation(program, 'uTex');
+    const uTime = gl.getUniformLocation(program, 'uTime');
+    const uRes = gl.getUniformLocation(program, 'uRes');
+
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
+    let texReady = false;
+    const uploadTex = () => {
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+      texReady = true;
+    };
+    if (img.complete) uploadTex();
+    else img.addEventListener('load', uploadTex);
+
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    const start = performance.now();
+
+    function resize() {
+      const rect = wrap.getBoundingClientRect();
+      dpr = Math.min(window.devicePixelRatio, 2);
+      width = rect.width;
+      height = rect.height;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      gl.viewport(0, 0, canvas.width, canvas.height);
     }
+
+    resize();
+    window.addEventListener('resize', resize);
+
+    canvas.classList.add('webgl-active');
+    img.classList.add('hidden');
+
+    function draw(now) {
+      if (!running || !texReady) return;
+      animId = requestAnimationFrame(draw);
+      const t = prefersReduced ? 0 : (now - start) * 0.001;
+
+      gl.useProgram(program);
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.enableVertexAttribArray(aPos);
+      gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.uniform1i(uTex, 0);
+      gl.uniform1f(uTime, t);
+      gl.uniform2f(uRes, width, height);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    }
+
+    draw(start);
+    glScene = { resize, draw, start };
   }
 
-  resize();
-  if (img?.complete) onImgLoad();
-  else img?.addEventListener('load', onImgLoad);
-
-  window.addEventListener('resize', resize);
-
-  const observer = new IntersectionObserver(
-    ([entry]) => {
-      running = entry.isIntersecting;
-      if (running) animate(performance.now());
-    },
-    { threshold: 0.05 }
-  );
-  observer.observe(wrap);
-
-  animate(start);
+  if (!setupVideo()) {
+    startWebGL();
+  } else {
+    video?.addEventListener('error', () => startWebGL(), { once: true });
+    setTimeout(() => {
+      if (!video?.classList.contains('playing')) startWebGL();
+    }, 2500);
+  }
 
   return {
     destroy() {
       running = false;
       cancelAnimationFrame(animId);
-      observer.disconnect();
-      window.removeEventListener('resize', resize);
+      observer?.disconnect();
+      video?.pause();
     },
   };
 }
