@@ -222,23 +222,15 @@ html.scroll-3d-active main {
   z-index: 10000;
   pointer-events: all;
   overflow: hidden;
-}
-.loader-wave-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
+  background: var(--brown-deep);
 }
 .loader.done {
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.9s var(--ease);
+  transition: opacity 0.8s var(--ease);
 }
 .loader-top,
-.loader-bottom {
-  display: none;
-}
+.loader-bottom { display: none; }
 .loader-center {
   position: absolute;
   inset: 0;
@@ -246,12 +238,10 @@ html.scroll-3d-active main {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 20px;
   z-index: 2;
-  transition: opacity 0.5s 0.3s;
-  text-shadow: 0 2px 24px rgba(14,10,8,0.6);
 }
-.loader.done .loader-center { opacity: 0; }
+.loader.done .loader-center { opacity: 0; transition: opacity 0.4s; }
 .loader-avatar {
   width: 80px;
   height: 80px;
@@ -264,20 +254,35 @@ html.scroll-3d-active main {
   font-size: 2.8rem;
   color: var(--gold);
 }
-.loader-bar {
-  width: 120px;
-  height: 2px;
-  background: rgba(255,255,255,0.15);
-  overflow: hidden;
-  margin-top: 8px;
+.loader-wave-track {
+  position: relative;
+  width: min(320px, 80vw);
+  height: 56px;
+  margin-top: 4px;
 }
-.loader-bar span {
-  display: block;
+.loader-wave-track canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
   height: 100%;
-  width: 0%;
-  background: var(--gold);
-  transition: width 0.2s;
 }
+.loader-track-labels {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 2px;
+  pointer-events: none;
+}
+.loader-point {
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.loader-point--shore { color: #d4c4a8; }
+.loader-point--ocean { color: #5ec8d8; }
 .loader-pct {
   font-size: 0.65rem;
   letter-spacing: 0.2em;

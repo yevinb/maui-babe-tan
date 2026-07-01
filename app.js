@@ -2,7 +2,6 @@
   'use strict';
 
   const loader = document.getElementById('loader');
-  const loaderBar = document.getElementById('loaderBar');
   const loaderPct = document.getElementById('loaderPct');
   const header = document.getElementById('header');
   const menuBtn = document.getElementById('menuBtn');
@@ -21,10 +20,9 @@
     if (progress >= 100) {
       progress = 100;
       clearInterval(tickLoader);
-      window.setLoaderProgress?.(100, true);
-      setTimeout(finishLoader, 900);
+      window.setLoaderProgress?.(100);
+      setTimeout(finishLoader, 700);
     }
-    if (loaderBar) loaderBar.style.width = progress + '%';
     if (loaderPct) loaderPct.textContent = Math.floor(progress) + '%';
     window.setLoaderProgress?.(progress);
   }, 120);
