@@ -417,13 +417,18 @@ button { font: inherit; cursor: pointer; border: none; background: none; color: 
 }
 .hero-bg-img.hidden { opacity: 0; visibility: hidden; }
 .hero-water-canvas {
-  z-index: 1;
+  z-index: 3;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.8s var(--ease);
+  transition: opacity 1s var(--ease);
+}
+.hero-water-canvas.tide-active {
+  opacity: 1;
+  mix-blend-mode: screen;
 }
 .hero-water-canvas.webgl-active {
   opacity: 1;
+  mix-blend-mode: normal;
   animation: liveBeachDrift 28s ease-in-out infinite alternate;
 }
 .hero-water-canvas.hidden { display: none; }
