@@ -15,18 +15,14 @@
   <title>Maui Babe Tan — Kuwait</title>
   <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/brand-avatar.jpg">
-  <link rel="preload" href="assets/hero-beach.jpg" as="image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Pinyon+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="stylesheet" href="styles.css?v=3">
 </head>
 <body>
 
-  <div class="progress" id="progress" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div>
-  <div class="cursor" id="cursor" aria-hidden="true"></div>
-  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
 
   <div class="loader" id="loader">
     <div class="loader-top"></div>
@@ -39,21 +35,21 @@
     </div>
   </div>
 
-  <header class="header hero-pass" id="header">
+  <header class="header" id="header">
     <div class="header-inner">
-      <a href="#home" class="logo magnetic">
+      <a href="#home" class="logo">
         <img src="assets/brand-avatar.jpg" alt="Maui Babe Tan" width="40" height="40">
         <span class="logo-word">Maui Babe</span>
       </a>
       <nav class="nav" aria-label="Main">
-        <a href="#products" class="magnetic">Shop</a>
-        <a href="#ritual" class="magnetic">Ritual</a>
-        <a href="#about" class="magnetic">Story</a>
-        <a href="#gallery" class="magnetic">Gallery</a>
-        <a href="https://instagram.com/mauibabe965" target="_blank" rel="noopener" class="magnetic">Instagram</a>
+        <a href="#products">Shop</a>
+        <a href="#about">Story</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#reviews">Reviews</a>
+        <a href="https://instagram.com/mauibabe965" target="_blank" rel="noopener">Instagram</a>
       </nav>
       <div class="header-actions">
-        <a href="https://wa.me/96555232772?text=Hello%2C%20I%20would%20like%20to%20place%20an%20order." class="btn btn-wa magnetic" target="_blank" rel="noopener">
+        <a href="https://wa.me/96555232772?text=Hello%2C%20I%20would%20like%20to%20place%20an%20order." class="btn btn-wa" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           Order
         </a>
@@ -71,9 +67,9 @@
     <nav class="menu-nav">
       <a href="#home" class="menu-link">Home</a>
       <a href="#products" class="menu-link">Shop</a>
-      <a href="#ritual" class="menu-link">Ritual</a>
       <a href="#about" class="menu-link">Story</a>
       <a href="#gallery" class="menu-link">Gallery</a>
+      <a href="#reviews" class="menu-link">Reviews</a>
       <a href="#delivery" class="menu-link">Delivery</a>
       <a href="https://wa.me/96555232772" class="menu-link accent" target="_blank" rel="noopener">WhatsApp</a>
     </nav>
@@ -84,44 +80,34 @@
   </div>
 
   <main>
+    <!-- HERO -->
     <section class="hero" id="home">
       <div class="hero-bg" id="heroBg">
-        <img class="ken-burns" src="assets/hero-beach.jpg" alt="" width="1920" height="1080" fetchpriority="high">
+        <img src="assets/hero-beach.jpg" alt="" width="1920" height="1080" fetchpriority="high">
       </div>
-      <div class="hero-glow"></div>
       <div class="hero-vignette"></div>
       <div class="hero-inner">
         <div class="hero-copy">
           <p class="label reveal">Kuwait · Authentic Maui Babe</p>
-          <h1 class="hero-title split-text">Not your average suntan</h1>
-          <p class="hero-sub reveal" data-delay="2">Genuine Hawaiian browning lotion and after-sun care — delivered across Kuwait.</p>
+          <h1 class="hero-title reveal" data-delay="1">
+            <span class="line">Not your</span>
+            <span class="line accent">average suntan</span>
+          </h1>
+          <p class="hero-sub reveal" data-delay="2">Genuine Hawaiian browning lotion and after-sun care — delivered across Kuwait. Order on WhatsApp.</p>
           <div class="hero-btns reveal" data-delay="3">
-            <a href="https://wa.me/96555232772?text=Hello%2C%20I%20would%20like%20to%20place%20an%20order." class="btn btn-gold magnetic" target="_blank" rel="noopener">Order Now</a>
-            <a href="#products" class="btn btn-line light magnetic">Explore Collection</a>
+            <a href="https://wa.me/96555232772?text=Hello%2C%20I%20would%20like%20to%20place%20an%20order." class="btn btn-gold" target="_blank" rel="noopener">Order Now</a>
+            <a href="#products" class="btn btn-line light">Explore Collection</a>
           </div>
         </div>
-        <div class="hero-showcase reveal" data-delay="4">
-          <div class="showcase-glow"></div>
-          <svg class="showcase-bottle" viewBox="0 0 120 220" aria-hidden="true">
-            <defs>
-              <linearGradient id="bottleShine" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="rgba(255,255,255,0.35)"/>
-                <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
-              </linearGradient>
-            </defs>
-            <rect x="36" y="0" width="48" height="20" rx="4" fill="#3D2A22"/>
-            <rect x="42" y="16" width="36" height="10" rx="2" fill="#5C4030"/>
-            <path d="M26 28 Q26 28 30 198 Q34 214 60 214 Q86 214 90 198 Q94 28 94 28 Z" fill="#3D2A22"/>
-            <rect x="30" y="56" width="60" height="100" rx="4" fill="#E8B84A"/>
-            <text x="60" y="98" font-family="Georgia, serif" font-size="13" font-weight="700" fill="#1A1210" text-anchor="middle">Maui</text>
-            <text x="60" y="116" font-family="Georgia, serif" font-size="13" font-weight="700" fill="#1A1210" text-anchor="middle">Babe</text>
-            <text x="60" y="138" font-family="Georgia, serif" font-size="6" fill="#3D2A22" text-anchor="middle">BROWNING LOTION</text>
-            <ellipse cx="42" cy="78" rx="8" ry="28" fill="url(#bottleShine)" transform="rotate(-8 42 78)"/>
-          </svg>
-          <div class="showcase-info">
-            <span class="tag-gold">Bestseller</span>
-            <strong>Browning Lotion</strong>
-            <span>The original Hawaiian formula</span>
+        <div class="hero-card reveal" data-delay="4">
+          <div class="hero-card-img">
+            <img src="assets/product-pool.jpg" alt="Maui Babe Browning Lotion" width="400" height="500">
+          </div>
+          <div class="hero-card-info">
+            <span class="label">Bestseller</span>
+            <h3>Browning Lotion</h3>
+            <p>The original Hawaiian formula</p>
+            <a href="https://wa.me/96555232772?text=Hello%2C%20I%20would%20like%20to%20order%20Browning%20Lotion." class="btn btn-line" target="_blank" rel="noopener">Order →</a>
           </div>
         </div>
       </div>
@@ -131,6 +117,7 @@
       </div>
     </section>
 
+    <!-- MARQUEE -->
     <div class="marquee-wrap" aria-hidden="true">
       <div class="marquee">
         <div class="marquee-content">
@@ -146,117 +133,124 @@
       </div>
     </div>
 
+    <!-- TRUST -->
     <section class="trust">
       <div class="container trust-grid">
-        <div class="trust-item reveal"><strong>100%</strong><span>Authentic</span></div>
-        <div class="trust-item reveal" data-delay="1"><strong>Same day</strong><span>Kuwait City</span></div>
-        <div class="trust-item reveal" data-delay="2"><strong>WhatsApp</strong><span>Direct order</span></div>
-        <div class="trust-item reveal" data-delay="3"><strong>@mauibabe965</strong><span>Instagram</span></div>
+        <div class="trust-item reveal">
+          <strong>100%</strong>
+          <span>Authentic products</span>
+        </div>
+        <div class="trust-item reveal" data-delay="1">
+          <strong>Same day</strong>
+          <span>Kuwait City delivery</span>
+        </div>
+        <div class="trust-item reveal" data-delay="2">
+          <strong>WhatsApp</strong>
+          <span>Personal ordering</span>
+        </div>
+        <div class="trust-item reveal" data-delay="3">
+          <strong>@mauibabe965</strong>
+          <span>Follow on Instagram</span>
+        </div>
       </div>
     </section>
 
-    <!-- SPOTLIGHT -->
-    <section class="spotlight">
-      <div class="spotlight-media clip-reveal">
-        <img src="assets/gallery-poolside.jpg" alt="Poolside" width="1400" height="900" loading="lazy">
+    <!-- FEATURED -->
+    <section class="featured">
+      <div class="featured-media reveal">
+        <img src="assets/gallery-poolside.jpg" alt="Poolside lifestyle" width="1200" height="900" loading="lazy">
+        <div class="featured-badge">
+          <svg class="bottle-icon" viewBox="0 0 80 160" aria-hidden="true">
+            <rect x="24" y="0" width="32" height="14" rx="3" fill="#4A3228"/>
+            <path d="M18 14 Q18 14 20 145 Q22 158 40 158 Q58 158 60 145 Q62 14 62 14 Z" fill="#4A3228"/>
+            <rect x="20" y="38" width="40" height="72" rx="3" fill="#F2C94C"/>
+            <text x="40" y="68" font-family="Georgia" font-size="8" font-weight="700" fill="#1C1410" text-anchor="middle">Maui</text>
+            <text x="40" y="80" font-family="Georgia" font-size="8" font-weight="700" fill="#1C1410" text-anchor="middle">Babe</text>
+          </svg>
+        </div>
       </div>
-      <div class="container spotlight-content reveal">
+      <div class="featured-copy reveal">
         <span class="label">The Icon</span>
-        <h2 class="display split-text-sm">Sunkissed and blissed</h2>
-        <p>Born on the beaches of Maui. A formula trusted for decades — deep, golden, unmistakable.</p>
-        <a href="#products" class="btn btn-line magnetic">Discover the range</a>
+        <h2>Sunkissed<br>and <em>blissed</em></h2>
+        <p>Born on the beaches of Maui. Loved worldwide for decades. Maui Babe's browning lotion delivers a deep, golden tan — faster than ordinary sun care.</p>
+        <p>We are Kuwait's dedicated source for the real product. Every bottle sourced, stored, and delivered with care.</p>
+        <a href="#products" class="btn btn-line">View the range</a>
       </div>
     </section>
 
+    <!-- PRODUCTS -->
     <section class="products" id="products">
       <div class="container">
         <div class="section-head reveal">
           <span class="label">Collection</span>
           <h2 class="display">The Maui Babe range</h2>
-          <p class="lead">Three essentials. One glow. Message us on WhatsApp for pricing.</p>
+          <p class="lead">Three essentials. One glow. Message us on WhatsApp for pricing and availability.</p>
         </div>
       </div>
       <div class="product-showcase">
         <article class="product reveal" data-tilt>
-          <div class="product-visual clip-reveal">
+          <div class="product-visual">
             <img src="assets/product-pool.jpg" alt="Browning Lotion" width="800" height="1000" loading="lazy">
             <div class="product-overlay">
               <span class="product-num">01</span>
-              <a href="https://wa.me/96555232772?text=Hello%2C%20I%20would%20like%20to%20order%20Browning%20Lotion." class="btn btn-gold magnetic" target="_blank" rel="noopener">Order</a>
+              <a href="https://wa.me/96555232772?text=Hello%2C%20I%20would%20like%20to%20order%20Browning%20Lotion." class="btn btn-gold" target="_blank" rel="noopener">Order on WhatsApp</a>
             </div>
           </div>
           <div class="product-info">
-            <div class="product-meta"><span class="tag">Bestseller</span><span class="price">On request</span></div>
+            <div class="product-meta">
+              <span class="tag">Bestseller</span>
+              <span class="price">Price on request</span>
+            </div>
             <h3>Browning Lotion</h3>
-            <p>Apply in sunlight to deepen and accelerate your natural tan.</p>
+            <p>The original Hawaiian formula. Apply in sunlight to deepen and accelerate your natural tan.</p>
           </div>
         </article>
         <article class="product reveal" data-delay="1" data-tilt>
-          <div class="product-visual clip-reveal">
+          <div class="product-visual">
             <img src="assets/product-sun.jpg" alt="After Browning Lotion" width="800" height="1000" loading="lazy">
             <div class="product-overlay">
               <span class="product-num">02</span>
-              <a href="https://wa.me/96555232772?text=Hello%2C%20I%20would%20like%20to%20order%20After%20Browning%20Lotion." class="btn btn-gold magnetic" target="_blank" rel="noopener">Order</a>
+              <a href="https://wa.me/96555232772?text=Hello%2C%20I%20would%20like%20to%20order%20After%20Browning%20Lotion." class="btn btn-gold" target="_blank" rel="noopener">Order on WhatsApp</a>
             </div>
           </div>
           <div class="product-info">
-            <div class="product-meta"><span class="tag">After Sun</span><span class="price">On request</span></div>
+            <div class="product-meta">
+              <span class="tag">After Sun</span>
+              <span class="price">Price on request</span>
+            </div>
             <h3>After Browning Lotion</h3>
-            <p>Hydrates and locks in your tan after sun exposure.</p>
+            <p>Hydrates and locks in your tan. The essential companion to your browning routine.</p>
           </div>
         </article>
         <article class="product reveal" data-delay="2" data-tilt>
-          <div class="product-visual clip-reveal">
+          <div class="product-visual">
             <img src="assets/product-set.jpg" alt="Complete Tan Set" width="800" height="1000" loading="lazy">
             <div class="product-overlay">
               <span class="product-num">03</span>
-              <a href="https://wa.me/96555232772?text=Hello%2C%20I%20would%20like%20to%20order%20the%20Complete%20Tan%20Set." class="btn btn-gold magnetic" target="_blank" rel="noopener">Order</a>
+              <a href="https://wa.me/96555232772?text=Hello%2C%20I%20would%20like%20to%20order%20the%20Complete%20Tan%20Set." class="btn btn-gold" target="_blank" rel="noopener">Order on WhatsApp</a>
             </div>
           </div>
           <div class="product-info">
-            <div class="product-meta"><span class="tag">Set</span><span class="price">On request</span></div>
+            <div class="product-meta">
+              <span class="tag">Set</span>
+              <span class="price">Price on request</span>
+            </div>
             <h3>Complete Tan Set</h3>
-            <p>Browning and aftercare together — the full routine.</p>
+            <p>Browning Lotion and After Browning Lotion together. The full application and aftercare routine.</p>
           </div>
         </article>
       </div>
     </section>
 
-    <!-- RITUAL -->
-    <section class="ritual" id="ritual">
-      <div class="container">
-        <div class="section-head center reveal">
-          <span class="label">The Ritual</span>
-          <h2 class="display">How to get the glow</h2>
-          <p class="lead">Three steps. Maximum results.</p>
-        </div>
-        <div class="ritual-grid">
-          <article class="ritual-card reveal">
-            <span class="ritual-num">01</span>
-            <h3>Apply in sun</h3>
-            <p>Smooth Browning Lotion evenly over skin while in direct sunlight. Reapply after swimming.</p>
-          </article>
-          <article class="ritual-card reveal" data-delay="1">
-            <span class="ritual-num">02</span>
-            <h3>Let it work</h3>
-            <p>Allow 15–20 minutes of sun exposure. The formula accelerates your natural melanin production.</p>
-          </article>
-          <article class="ritual-card reveal" data-delay="2">
-            <span class="ritual-num">03</span>
-            <h3>Lock it in</h3>
-            <p>After your session, apply After Browning Lotion to hydrate and extend your tan.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
+    <!-- INTERLUDE -->
     <section class="interlude" aria-hidden="true">
       <div class="interlude-bg" id="interludeBg">
         <img src="assets/about-sunset.jpg" alt="" width="1920" height="1080" loading="lazy">
       </div>
-      <p class="interlude-text scale-text">Maui Babe · Glow Standard</p>
+      <p class="interlude-text">Maui Babe · Glow Standard</p>
     </section>
 
+    <!-- ABOUT -->
     <section class="about" id="about">
       <div class="container about-layout">
         <div class="about-sticky reveal">
@@ -264,54 +258,76 @@
           <h2 class="display">Kuwait's home for <em>authentic</em> Maui Babe</h2>
         </div>
         <div class="about-content">
-          <p class="reveal">Maui Babe is not a trend — it is a formula that has defined island tanning for generations. The browning lotion accelerates melanin under sunlight, producing a rich, even colour.</p>
-          <p class="reveal">We import genuine stock directly. Every order handled personally via WhatsApp — confirmed price, delivery window, and tracking before dispatch.</p>
+          <p class="reveal">Maui Babe is not a trend — it is a formula that has defined island tanning for generations. The browning lotion accelerates melanin production under sunlight, producing a rich, even colour that standard sunscreens cannot replicate.</p>
+          <p class="reveal">We import genuine stock directly and handle every order personally. No marketplace, no middlemen — just WhatsApp, confirmation, and delivery to your door.</p>
           <div class="about-images reveal">
-            <figure class="clip-reveal"><img src="assets/about-pool.jpg" alt="Resort pool" width="600" height="750" loading="lazy"></figure>
-            <figure class="about-quote-block"><blockquote>Not your average suntan</blockquote></figure>
+            <figure>
+              <img src="assets/about-pool.jpg" alt="Resort pool" width="600" height="750" loading="lazy">
+            </figure>
+            <figure class="about-quote-block">
+              <blockquote>Not your average suntan</blockquote>
+            </figure>
+          </div>
+          <div class="about-steps reveal">
+            <div class="step">
+              <span>01</span>
+              <div>
+                <h4>Message us</h4>
+                <p>Send your product choice and delivery address on WhatsApp.</p>
+              </div>
+            </div>
+            <div class="step">
+              <span>02</span>
+              <div>
+                <h4>Confirm details</h4>
+                <p>We reply with price, availability, and delivery window.</p>
+              </div>
+            </div>
+            <div class="step">
+              <span>03</span>
+              <div>
+                <h4>Receive your order</h4>
+                <p>Carefully packed and delivered across Kuwait.</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- GALLERY -->
     <section class="gallery" id="gallery">
-      <div class="container gallery-head">
+      <div class="container">
         <div class="section-head reveal">
           <span class="label">Gallery</span>
           <h2 class="display light">The lifestyle</h2>
         </div>
-        <div class="gallery-nav reveal">
-          <button class="gallery-btn" id="galleryPrev" aria-label="Previous">←</button>
-          <button class="gallery-btn" id="galleryNext" aria-label="Next">→</button>
-        </div>
       </div>
       <div class="gallery-track" id="galleryTrack">
-        <figure class="gallery-slide"><img src="assets/gallery-ocean.jpg" alt="Ocean" width="700" height="900" loading="lazy"><figcaption>Ocean</figcaption></figure>
-        <figure class="gallery-slide"><img src="assets/gallery-poolside.jpg" alt="Poolside" width="700" height="900" loading="lazy"><figcaption>Poolside</figcaption></figure>
-        <figure class="gallery-slide wide"><img src="assets/hero-beach.jpg" alt="Beach" width="1000" height="700" loading="lazy"><figcaption>Beach</figcaption></figure>
-        <figure class="gallery-slide"><img src="assets/product-sun.jpg" alt="Golden hour" width="700" height="900" loading="lazy"><figcaption>Golden hour</figcaption></figure>
-        <figure class="gallery-slide"><img src="assets/about-pool.jpg" alt="Resort" width="700" height="900" loading="lazy"><figcaption>Resort</figcaption></figure>
+        <figure class="gallery-slide reveal">
+          <img src="assets/gallery-ocean.jpg" alt="Ocean horizon" width="700" height="900" loading="lazy">
+          <figcaption>Ocean</figcaption>
+        </figure>
+        <figure class="gallery-slide reveal" data-delay="1">
+          <img src="assets/gallery-poolside.jpg" alt="Poolside" width="700" height="900" loading="lazy">
+          <figcaption>Poolside</figcaption>
+        </figure>
+        <figure class="gallery-slide wide reveal" data-delay="2">
+          <img src="assets/hero-beach.jpg" alt="Beach" width="1000" height="700" loading="lazy">
+          <figcaption>Beach</figcaption>
+        </figure>
+        <figure class="gallery-slide reveal" data-delay="3">
+          <img src="assets/product-sun.jpg" alt="Golden light" width="700" height="900" loading="lazy">
+          <figcaption>Golden hour</figcaption>
+        </figure>
+        <figure class="gallery-slide reveal" data-delay="4">
+          <img src="assets/about-pool.jpg" alt="Resort" width="700" height="900" loading="lazy">
+          <figcaption>Resort</figcaption>
+        </figure>
       </div>
     </section>
 
-    <!-- INSTAGRAM -->
-    <section class="instagram" id="instagram">
-      <div class="container instagram-layout">
-        <div class="instagram-copy reveal">
-          <span class="label">Social</span>
-          <h2 class="display">Follow the glow</h2>
-          <p class="lead">Daily inspiration, customer results, and new arrivals on Instagram.</p>
-          <a href="https://instagram.com/mauibabe965" class="btn btn-line magnetic" target="_blank" rel="noopener">@mauibabe965</a>
-        </div>
-        <div class="instagram-grid reveal">
-          <a href="https://instagram.com/mauibabe965" target="_blank" rel="noopener" class="ig-tile clip-reveal"><img src="assets/product-pool.jpg" alt="" loading="lazy"></a>
-          <a href="https://instagram.com/mauibabe965" target="_blank" rel="noopener" class="ig-tile clip-reveal"><img src="assets/gallery-poolside.jpg" alt="" loading="lazy"></a>
-          <a href="https://instagram.com/mauibabe965" target="_blank" rel="noopener" class="ig-tile clip-reveal"><img src="assets/hero-beach.jpg" alt="" loading="lazy"></a>
-          <a href="https://instagram.com/mauibabe965" target="_blank" rel="noopener" class="ig-tile clip-reveal"><img src="assets/about-sunset.jpg" alt="" loading="lazy"></a>
-        </div>
-      </div>
-    </section>
-
+    <!-- REVIEWS -->
     <section class="reviews" id="reviews">
       <div class="container">
         <div class="section-head center reveal">
@@ -320,47 +336,74 @@
         </div>
         <div class="reviews-slider">
           <article class="review-card reveal">
-            <div class="stars">★★★★★</div>
+            <div class="stars" aria-label="5 stars">★★★★★</div>
             <blockquote>Ordered through WhatsApp and received it the next morning. Genuine product — the tan developed exactly as expected.</blockquote>
-            <footer><strong>Sara A.</strong><span>Salmiya</span></footer>
+            <footer>
+              <strong>Sara A.</strong>
+              <span>Salmiya</span>
+            </footer>
           </article>
           <article class="review-card featured reveal" data-delay="1">
-            <div class="stars">★★★★★</div>
-            <blockquote>Reliable seller. I've ordered twice now and both times the product was authentic and well packaged.</blockquote>
-            <footer><strong>Nour K.</strong><span>Kuwait City</span></footer>
+            <div class="stars" aria-label="5 stars">★★★★★</div>
+            <blockquote>Reliable seller. I've ordered the browning lotion twice now and both times the product was authentic and well packaged.</blockquote>
+            <footer>
+              <strong>Nour K.</strong>
+              <span>Kuwait City</span>
+            </footer>
           </article>
           <article class="review-card reveal" data-delay="2">
-            <div class="stars">★★★★★</div>
-            <blockquote>The complete set is worth it. Delivery was fast to Hawally and everything was confirmed before sending.</blockquote>
-            <footer><strong>Lama M.</strong><span>Hawally</span></footer>
+            <div class="stars" aria-label="5 stars">★★★★★</div>
+            <blockquote>The complete set is worth it. Delivery was fast to Hawally and the seller confirmed everything before sending.</blockquote>
+            <footer>
+              <strong>Lama M.</strong>
+              <span>Hawally</span>
+            </footer>
           </article>
         </div>
       </div>
     </section>
 
+    <!-- DELIVERY -->
     <section class="delivery" id="delivery">
-      <div class="container delivery-layout">
-        <div class="delivery-intro reveal">
-          <span class="label">Delivery</span>
-          <h2 class="display">Across every governorate</h2>
-          <p class="lead">Share your location on WhatsApp. We confirm timing and cost before dispatch.</p>
-          <a href="https://wa.me/96555232772?text=Hello%2C%20I%20would%20like%20to%20place%20an%20order." class="btn btn-gold magnetic" target="_blank" rel="noopener">Start an order</a>
-        </div>
-        <div class="delivery-cards">
-          <div class="delivery-card reveal"><span class="num">01</span><h3>Same-day Kuwait City</h3><p>Orders before 2 PM delivered same day.</p></div>
-          <div class="delivery-card reveal" data-delay="1"><span class="num">02</span><h3>All areas</h3><p>Salmiya, Hawally, Fahaheel, Jahra, and beyond.</p></div>
-          <div class="delivery-card reveal" data-delay="2"><span class="num">03</span><h3>Secure packaging</h3><p>Every order packed to arrive intact.</p></div>
+      <div class="container">
+        <div class="delivery-layout">
+          <div class="delivery-intro reveal">
+            <span class="label">Delivery</span>
+            <h2 class="display">Across every governorate in Kuwait</h2>
+            <p class="lead">Share your location on WhatsApp. We confirm timing and cost before dispatch — no surprises.</p>
+            <a href="https://wa.me/96555232772?text=Hello%2C%20I%20would%20like%20to%20place%20an%20order." class="btn btn-gold" target="_blank" rel="noopener">Start an order</a>
+          </div>
+          <div class="delivery-cards">
+            <div class="delivery-card reveal">
+              <span class="num">01</span>
+              <h3>Same-day Kuwait City</h3>
+              <p>Orders confirmed before 2 PM delivered the same day.</p>
+            </div>
+            <div class="delivery-card reveal" data-delay="1">
+              <span class="num">02</span>
+              <h3>All areas</h3>
+              <p>Salmiya, Hawally, Fahaheel, Jahra, and beyond.</p>
+            </div>
+            <div class="delivery-card reveal" data-delay="2">
+              <span class="num">03</span>
+              <h3>Secure packaging</h3>
+              <p>Every order packed to arrive intact.</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
+    <!-- CTA -->
     <section class="cta">
-      <div class="cta-bg"><img src="assets/hero-beach.jpg" alt="" width="1920" height="1080" loading="lazy"></div>
+      <div class="cta-bg">
+        <img src="assets/hero-beach.jpg" alt="" width="1920" height="1080" loading="lazy">
+      </div>
       <div class="cta-inner reveal">
         <span class="label light">Ready?</span>
-        <h2 class="display light split-text-sm">Place your order</h2>
+        <h2 class="display light">Place your order</h2>
         <p>Message us on WhatsApp to check stock and arrange delivery.</p>
-        <a href="https://wa.me/96555232772?text=Hello%2C%20I%20would%20like%20to%20place%20an%20order." class="btn btn-gold btn-lg magnetic" target="_blank" rel="noopener">
+        <a href="https://wa.me/96555232772?text=Hello%2C%20I%20would%20like%20to%20place%20an%20order." class="btn btn-gold btn-lg" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           +965 5523 2772
         </a>
@@ -378,9 +421,9 @@
         <div>
           <h4>Navigate</h4>
           <a href="#products">Shop</a>
-          <a href="#ritual">Ritual</a>
           <a href="#about">Story</a>
           <a href="#gallery">Gallery</a>
+          <a href="#delivery">Delivery</a>
         </div>
         <div>
           <h4>Contact</h4>
@@ -396,15 +439,10 @@
     </div>
   </footer>
 
-  <div class="sticky-bar" id="stickyBar">
-    <span>Browning Lotion — available now</span>
-    <a href="https://wa.me/96555232772?text=Hello%2C%20I%20would%20like%20to%20place%20an%20order." class="btn btn-gold" target="_blank" rel="noopener">Order</a>
-  </div>
-
   <a href="https://wa.me/96555232772?text=Hello%2C%20I%20would%20like%20to%20place%20an%20order." class="fab" target="_blank" rel="noopener" aria-label="Order on WhatsApp">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
   </a>
 
-  <script src="app.js?v=4"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>
