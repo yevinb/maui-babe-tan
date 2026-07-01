@@ -21,7 +21,7 @@
       progress = 100;
       clearInterval(tickLoader);
       window.setLoaderProgress?.(100);
-      setTimeout(finishLoader, 700);
+      setTimeout(finishLoader, 800);
     }
     if (loaderPct) loaderPct.textContent = Math.floor(progress) + '%';
     window.setLoaderProgress?.(progress);

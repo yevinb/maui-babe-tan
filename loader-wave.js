@@ -1,11 +1,11 @@
 export function initLoaderWave() {
+  const loader = document.getElementById('loader');
+  const video = document.getElementById('loaderOceanVideo');
   const canvas = document.getElementById('loaderWave');
-  const track = document.getElementById('loaderWaveTrack');
-  if (!canvas || !track) return () => {};
+  if (!loader) return () => {};
 
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const ctx = canvas.getContext('2d', { alpha: true });
-  if (!ctx) return () => {};
+  const ctx = canvas?.getContext('2d', { alpha: true });
 
   let width = 0;
   let height = 0;
@@ -15,146 +15,122 @@ export function initLoaderWave() {
   let running = true;
   let animId;
   let start = performance.now();
-
-  // Path endpoints — ocean (right) → shore (left)
-  let startPt = { x: 0, y: 0 };
-  let endPt = { x: 0, y: 0 };
+  let videoReady = false;
+  let duration = 10;
 
   function resize() {
-    const rect = track.getBoundingClientRect();
-    dpr = Math.min(window.devicePixelRatio, 2);
-    width = rect.width;
-    height = rect.height;
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
-    canvas.style.width = width + 'px';
-    canvas.style.height = height + 'px';
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    const pad = 28;
-    const midY = height * 0.5;
-    startPt = { x: width - pad, y: midY }; // ocean — start
-    endPt = { x: pad, y: midY };           // shore — finish
+    width = window.innerWidth;
+    height = window.innerHeight;
+    if (canvas) {
+      dpr = Math.min(window.devicePixelRatio, 2);
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      ctx?.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
   }
 
-  function lerp(a, b, t) {
-    return a + (b - a) * t;
+  function setupVideo() {
+    if (!video) return;
+    video.muted = true;
+    video.playsInline = true;
+    video.setAttribute('playsinline', '');
+    video.preload = 'auto';
+
+    const onReady = () => {
+      videoReady = true;
+      duration = video.duration || 10;
+      video.pause();
+      syncVideo();
+    };
+
+    video.addEventListener('loadedmetadata', onReady, { once: true });
+    video.addEventListener('canplay', onReady, { once: true });
+    video.addEventListener('error', () => { videoReady = false; });
+    video.load();
   }
 
-  function drawWaveAt(x, y, t, scale) {
-    const amp = 10 * scale;
-    const freq = 0.14;
-
-    // Foam body
-    ctx.beginPath();
-    ctx.moveTo(x - 50 * scale, y + 20);
-    for (let i = -50; i <= 50; i += 2) {
-      const px = x + i * scale;
-      const py = y + Math.sin(i * freq + t * 3) * amp * scale;
-      ctx.lineTo(px, py);
+  function syncVideo() {
+    if (!video || !videoReady) return;
+    const t = (progress / 100) * duration;
+    if (Math.abs(video.currentTime - t) > 0.05) {
+      video.currentTime = t;
     }
-    ctx.lineTo(x + 50 * scale, y + 20);
-    ctx.closePath();
-    const foam = ctx.createLinearGradient(x - 40 * scale, y - 15, x + 40 * scale, y + 15);
-    foam.addColorStop(0, 'rgba(255,255,255,0.85)');
-    foam.addColorStop(0.5, 'rgba(200,240,255,0.7)');
-    foam.addColorStop(1, 'rgba(255,255,255,0.2)');
-    ctx.fillStyle = foam;
-    ctx.fill();
+  }
 
-    // Crest line
+  function crestY(x, t, baseY, amp) {
+    return baseY + Math.sin(x * 0.008 + t * 1.6) * amp + Math.sin(x * 0.015 - t * 1.1) * amp * 0.45;
+  }
+
+  function drawWaveOverlay(t) {
+    if (!ctx || !canvas) return;
+    const p = progress / 100;
+
+    ctx.clearRect(0, 0, width, height);
+
+    // Wave travels bottom → top (ocean washing onto beach in the video)
+    const startY = height * 1.05;
+    const endY = height * 0.15;
+    const waveFront = startY + (endY - startY) * p;
+
+    // Wet sand trail behind the wave
+    ctx.fillStyle = 'rgba(120,200,220,0.12)';
+    ctx.fillRect(0, waveFront, width, height - waveFront);
+
+    // Foam layers
+    const layers = [
+      { offset: 40, alpha: 0.2, amp: 16 },
+      { offset: 20, alpha: 0.35, amp: 12 },
+      { offset: 0, alpha: 0.55, amp: 9 },
+    ];
+
+    layers.forEach((layer, i) => {
+      const base = waveFront - layer.offset;
+      ctx.beginPath();
+      ctx.moveTo(0, height);
+      for (let x = 0; x <= width; x += 3) {
+        ctx.lineTo(x, crestY(x, t + i * 0.5, base, layer.amp));
+      }
+      ctx.lineTo(width, height);
+      ctx.closePath();
+      const grad = ctx.createLinearGradient(0, base - 30, 0, base + 50);
+      grad.addColorStop(0, `rgba(255,255,255,${layer.alpha})`);
+      grad.addColorStop(0.5, `rgba(200,240,255,${layer.alpha * 0.6})`);
+      grad.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = grad;
+      ctx.fill();
+    });
+
+    // Bright crest
     ctx.beginPath();
-    for (let i = -50; i <= 50; i += 2) {
-      const px = x + i * scale;
-      const py = y + Math.sin(i * freq + t * 3) * amp * scale;
-      if (i === -50) ctx.moveTo(px, py);
-      else ctx.lineTo(px, py);
+    for (let x = 0; x <= width; x += 2) {
+      const y = crestY(x, t * 1.3, waveFront, 7);
+      if (x === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
     }
-    ctx.strokeStyle = 'rgba(255,255,255,0.95)';
-    ctx.lineWidth = 2.5 * scale;
-    ctx.shadowColor = 'rgba(255,255,255,0.8)';
-    ctx.shadowBlur = 8;
+    ctx.strokeStyle = `rgba(255,255,255,${0.45 + p * 0.4})`;
+    ctx.lineWidth = 3 + p * 4;
+    ctx.shadowColor = 'rgba(255,255,255,0.7)';
+    ctx.shadowBlur = 10;
     ctx.stroke();
     ctx.shadowBlur = 0;
   }
 
   function draw(t) {
-    ctx.clearRect(0, 0, width, height);
-    const p = progress / 100;
-
-    // Travel path line
-    ctx.beginPath();
-    ctx.moveTo(startPt.x, startPt.y);
-    ctx.lineTo(endPt.x, endPt.y);
-    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([4, 6]);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // Water trail — shows how far the wave has travelled
-    const waveX = lerp(startPt.x, endPt.x, p);
-    const waveY = lerp(startPt.y, endPt.y, p);
-
-    if (p > 0.01) {
-      ctx.beginPath();
-      ctx.moveTo(startPt.x, startPt.y);
-      ctx.lineTo(waveX, waveY);
-      ctx.strokeStyle = 'rgba(80,200,220,0.45)';
-      ctx.lineWidth = 4;
-      ctx.lineCap = 'round';
-      ctx.stroke();
-    }
-
-    // Endpoint markers
-    // Ocean (start)
-    ctx.beginPath();
-    ctx.arc(startPt.x, startPt.y, 6, 0, Math.PI * 2);
-    ctx.fillStyle = '#1fa3b0';
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
-    // Shore (end)
-    ctx.beginPath();
-    ctx.arc(endPt.x, endPt.y, 6, 0, Math.PI * 2);
-    ctx.fillStyle = '#d4c4a8';
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
-    // Traveling wave
-    if (!prefersReduced) {
-      drawWaveAt(waveX, waveY, t, 1);
-    } else {
-      ctx.beginPath();
-      ctx.arc(waveX, waveY, 8, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255,255,255,0.8)';
-      ctx.fill();
-    }
-
-    // Pulse at destination when nearly done
-    if (p > 0.92) {
-      const pulse = (Math.sin(t * 6) * 0.5 + 0.5) * (p - 0.92) / 0.08;
-      ctx.beginPath();
-      ctx.arc(endPt.x, endPt.y, 6 + pulse * 12, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(255,255,255,${pulse * 0.5})`;
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    }
+    syncVideo();
+    if (!prefersReduced) drawWaveOverlay(t);
   }
 
   function animate(now) {
     if (!running) return;
     animId = requestAnimationFrame(animate);
-    const elapsed = (now - start) * 0.001;
-    progress += (targetProgress - progress) * 0.1;
-    draw(elapsed);
+    progress += (targetProgress - progress) * 0.09;
+    draw((now - start) * 0.001);
   }
 
   resize();
+  setupVideo();
   window.addEventListener('resize', resize);
   animate(start);
 

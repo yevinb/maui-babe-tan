@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Pinyon+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=10">
+  <link rel="stylesheet" href="styles.css?v=11">
 </head>
 <body>
 
@@ -26,18 +26,16 @@
   <canvas id="ambientCanvas" class="ambient-canvas" aria-hidden="true"></canvas>
 
   <div class="loader" id="loader">
-    <div class="loader-top"></div>
-    <div class="loader-bottom"></div>
+    <div class="loader-ocean" aria-hidden="true">
+      <video id="loaderOceanVideo" class="loader-ocean-video" muted playsinline preload="auto" poster="assets/hero-beach.jpg">
+        <source src="assets/hero-beach.mp4" type="video/mp4">
+      </video>
+      <canvas id="loaderWave" class="loader-wave-canvas"></canvas>
+      <div class="loader-ocean-vignette"></div>
+    </div>
     <div class="loader-center">
       <img src="assets/brand-avatar.jpg" alt="" class="loader-avatar" width="80" height="80">
       <span class="loader-brand">Maui Babe</span>
-      <div class="loader-wave-track" id="loaderWaveTrack">
-        <canvas id="loaderWave" aria-hidden="true"></canvas>
-        <div class="loader-track-labels">
-          <span class="loader-point loader-point--shore">Shore</span>
-          <span class="loader-point loader-point--ocean">Ocean</span>
-        </div>
-      </div>
       <span class="loader-pct" id="loaderPct">0%</span>
     </div>
   </div>
@@ -476,10 +474,10 @@
   </a>
 
   <script type="module">
-    import { initLoaderWave } from './loader-wave.js?v=10';
+    import { initLoaderWave } from './loader-wave.js?v=11';
     window.setLoaderProgress = initLoaderWave();
   </script>
-  <script src="app.js?v=10"></script>
-  <script type="module" src="scene-3d.js?v=10"></script>
+  <script src="app.js?v=11"></script>
+  <script type="module" src="scene-3d.js?v=11"></script>
 </body>
 </html>

@@ -215,22 +215,50 @@ html.scroll-3d-active main {
 .btn-wa svg { width: 16px; height: 16px; }
 .btn-lg { padding: 18px 40px; font-size: 0.78rem; }
 
-/* Loader */
+/* Loader — real ocean video + wave progress */
 .loader {
   position: fixed;
   inset: 0;
   z-index: 10000;
   pointer-events: all;
   overflow: hidden;
-  background: var(--brown-deep);
+  background: #0a4f62;
 }
 .loader.done {
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.8s var(--ease);
+  transition: opacity 1s var(--ease);
 }
-.loader-top,
-.loader-bottom { display: none; }
+.loader-ocean {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.loader-ocean-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.loader-wave-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+.loader-ocean-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    linear-gradient(180deg, rgba(14,10,8,0.45) 0%, transparent 30%),
+    linear-gradient(180deg, transparent 50%, rgba(14,10,8,0.55) 100%);
+  pointer-events: none;
+}
 .loader-center {
   position: absolute;
   inset: 0;
@@ -238,55 +266,29 @@ html.scroll-3d-active main {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-  z-index: 2;
+  gap: 16px;
+  z-index: 3;
+  text-shadow: 0 2px 20px rgba(14,10,8,0.8);
 }
-.loader.done .loader-center { opacity: 0; transition: opacity 0.4s; }
+.loader.done .loader-center { opacity: 0; transition: opacity 0.5s; }
 .loader-avatar {
   width: 80px;
   height: 80px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid var(--gold);
+  box-shadow: 0 8px 32px rgba(14,10,8,0.4);
 }
 .loader-brand {
   font-family: var(--script);
   font-size: 2.8rem;
   color: var(--gold);
 }
-.loader-wave-track {
-  position: relative;
-  width: min(320px, 80vw);
-  height: 56px;
-  margin-top: 4px;
-}
-.loader-wave-track canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-.loader-track-labels {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  padding-bottom: 2px;
-  pointer-events: none;
-}
-.loader-point {
-  font-size: 0.58rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  font-weight: 600;
-}
-.loader-point--shore { color: #d4c4a8; }
-.loader-point--ocean { color: #5ec8d8; }
 .loader-pct {
   font-size: 0.65rem;
   letter-spacing: 0.2em;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.7);
+  margin-top: 4px;
 }
 
 /* Header */
