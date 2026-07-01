@@ -21,10 +21,12 @@
     if (progress >= 100) {
       progress = 100;
       clearInterval(tickLoader);
-      setTimeout(finishLoader, 300);
+      window.setLoaderProgress?.(100, true);
+      setTimeout(finishLoader, 900);
     }
     if (loaderBar) loaderBar.style.width = progress + '%';
     if (loaderPct) loaderPct.textContent = Math.floor(progress) + '%';
+    window.setLoaderProgress?.(progress);
   }, 120);
 
   function finishLoader() {
