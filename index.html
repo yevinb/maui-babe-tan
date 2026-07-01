@@ -18,12 +18,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Pinyon+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=11">
+  <link rel="stylesheet" href="styles.css?v=12">
 </head>
 <body>
 
   <div class="grain" aria-hidden="true"></div>
   <canvas id="ambientCanvas" class="ambient-canvas" aria-hidden="true"></canvas>
+  <canvas id="glScreen" class="gl-screen-canvas" aria-hidden="true"></canvas>
 
   <div class="loader" id="loader">
     <div class="loader-ocean" aria-hidden="true">
@@ -148,7 +149,7 @@
     </section>
 
     <!-- MARQUEE -->
-    <div class="marquee-wrap" aria-hidden="true">
+    <div class="marquee-wrap" aria-hidden="true" data-scroll-3d>
       <div class="marquee">
         <div class="marquee-content">
           <span>Sunkissed and blissed</span><i>◆</i>
@@ -281,7 +282,7 @@
     </section>
 
     <!-- ABOUT -->
-    <section class="about" id="about">
+    <section class="about" id="about" data-scroll-3d>
       <div class="container about-layout">
         <div class="about-sticky reveal">
           <span class="label">Our Story</span>
@@ -474,10 +475,10 @@
   </a>
 
   <script type="module">
-    import { initLoaderWave } from './loader-wave.js?v=11';
+    import { initLoaderWave } from './loader-wave.js?v=12';
     window.setLoaderProgress = initLoaderWave();
   </script>
-  <script src="app.js?v=11"></script>
-  <script type="module" src="scene-3d.js?v=11"></script>
+  <script src="app.js?v=12"></script>
+  <script type="module" src="scene-3d.js?v=12"></script>
 </body>
 </html>

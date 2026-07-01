@@ -43,7 +43,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; color: 
   margin: 0 auto;
 }
 
-/* Global WebGL ambient layer */
+/* Global WebGL layers */
 .ambient-canvas {
   position: fixed;
   inset: 0;
@@ -51,14 +51,32 @@ button { font: inherit; cursor: pointer; border: none; background: none; color: 
   height: 100%;
   pointer-events: none;
   z-index: 0;
-  opacity: 0.55;
+  opacity: 0.75;
 }
-main {
-  position: relative;
+.gl-screen-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: soft-light;
+}
+.scroll-bottles-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
   z-index: 1;
 }
-.header { z-index: 100; }
-.footer { position: relative; z-index: 1; }
+html.webgl-active main {
+  position: relative;
+  z-index: 2;
+}
+html.webgl-active .header { z-index: 100; }
+html.webgl-active .footer { position: relative; z-index: 2; }
+html.webgl-active .fab { z-index: 99; }
 
 /* Scroll-driven 3D sections */
 html.scroll-3d-active main {
@@ -124,6 +142,31 @@ html.scroll-3d-active main {
   transform-style: preserve-3d;
   transition: transform 0.15s var(--ease-out), opacity 0.15s var(--ease-out);
   will-change: transform, opacity;
+  position: relative;
+  overflow: hidden;
+}
+
+/* WebGL card frames */
+.review-card,
+.delivery-card,
+.trust-item {
+  position: relative;
+  overflow: hidden;
+}
+.card-gl-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.7;
+}
+.review-card > *:not(.card-gl-canvas),
+.delivery-card > *:not(.card-gl-canvas),
+.trust-item > *:not(.card-gl-canvas) {
+  position: relative;
+  z-index: 1;
 }
 
 /* Grain */
@@ -1386,7 +1429,10 @@ html.scroll-3d-active main {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
-  .ambient-canvas { opacity: 0.3; }
+  .ambient-canvas { opacity: 0.35; }
+  .gl-screen-canvas,
+  .scroll-bottles-canvas { display: none; }
+  .card-gl-canvas { display: none; }
   [data-scroll-3d] .scroll-3d-inner,
   [data-scroll-3d] { transform: none !important; opacity: 1 !important; }
   .gallery-slide { transform: none !important; opacity: 1 !important; }

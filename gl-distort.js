@@ -160,11 +160,27 @@ function createDistortScene(wrap) {
 }
 
 export function initGlDistort() {
-  const els = document.querySelectorAll('[data-gl-distort]');
+  const selectors = [
+    '[data-gl-distort]',
+    '.gallery-slide',
+    '.about-images figure',
+    '.trust-item',
+    '.marquee-wrap',
+  ];
+  const seen = new Set();
   const scenes = [];
-  els.forEach((el) => {
-    const s = createDistortScene(el);
-    if (s) scenes.push(s);
+
+  selectors.forEach((sel) => {
+    document.querySelectorAll(sel).forEach((el) => {
+      const img = el.querySelector('img');
+      if (seen.has(el) || !img) return;
+      seen.add(el);
+      if (!el.dataset.glDistort) el.dataset.glDistort = 'true';
+      if (!el.dataset.glStrength) el.dataset.glStrength = el.classList.contains('gallery-slide') ? '0.7' : '0.9';
+      const s = createDistortScene(el);
+      if (s) scenes.push(s);
+    });
   });
+
   return { destroy: () => scenes.forEach((s) => s.destroy()) };
 }

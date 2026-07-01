@@ -24,9 +24,9 @@ export function initGallery3D() {
       const offset = (slideCenter - centerX) / trackRect.width;
       const clamped = Math.max(-1.5, Math.min(1.5, offset));
 
-      const rotateY = clamped * -18;
-      const translateZ = (1 - Math.abs(clamped)) * 60;
-      const scale = 0.92 + (1 - Math.abs(clamped) / 1.5) * 0.08;
+      const rotateY = clamped * -22;
+      const translateZ = (1 - Math.abs(clamped)) * 100;
+      const scale = 0.88 + (1 - Math.abs(clamped) / 1.5) * 0.12;
 
       slide.style.transform = `rotateY(${rotateY}deg) translateZ(${translateZ}px) scale(${scale})`;
       slide.style.opacity = String(0.65 + (1 - Math.abs(clamped) / 1.5) * 0.35);

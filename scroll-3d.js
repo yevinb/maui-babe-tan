@@ -19,11 +19,12 @@ export function initScroll3D() {
       const dist = (center - vh * 0.5) / vh;
       const clamped = Math.max(-1, Math.min(1, dist));
 
-      const rotateX = clamped * -10;
-      const translateZ = (1 - Math.abs(clamped)) * 40 - 20;
-      const scale = 0.96 + (1 - Math.abs(clamped)) * 0.04;
+      const rotateX = clamped * -14;
+      const translateZ = (1 - Math.abs(clamped)) * 80 - 30;
+      const scale = 0.92 + (1 - Math.abs(clamped)) * 0.08;
+      const rotateY = clamped * 4;
 
-      inner.style.transform = `perspective(1400px) rotateX(${rotateX}deg) translateZ(${translateZ}px) scale(${scale})`;
+      inner.style.transform = `perspective(1400px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(${translateZ}px) scale(${scale})`;
       inner.style.opacity = String(0.7 + (1 - Math.abs(clamped)) * 0.3);
     });
 
