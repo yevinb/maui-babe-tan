@@ -68,11 +68,6 @@
   function parallax() {
     const y = window.scrollY;
     if (heroBg) heroBg.style.transform = `translate3d(0, ${y * 0.28}px, 0)`;
-    if (interludeBg) {
-      const rect = interludeBg.getBoundingClientRect();
-      const offset = (rect.top + rect.height / 2 - window.innerHeight / 2) * 0.12;
-      interludeBg.style.transform = `translate3d(0, ${offset}px, 0)`;
-    }
   }
 
   /* ── Mobile menu ── */
@@ -105,28 +100,7 @@
   );
   reveals.forEach((el) => observer.observe(el));
 
-  /* ── Product tilt (3D) ── */
-  if (window.matchMedia('(hover: hover)').matches) {
-    document.querySelectorAll('[data-tilt]').forEach((card) => {
-      const shine = document.createElement('div');
-      shine.className = 'tilt-shine';
-      card.appendChild(shine);
-
-      card.addEventListener('mousemove', (e) => {
-        const rect = card.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width - 0.5;
-        const y = (e.clientY - rect.top) / rect.height - 0.5;
-        card.style.transform = `perspective(1000px) rotateY(${x * 12}deg) rotateX(${-y * 12}deg) translateZ(8px)`;
-        shine.style.background = `radial-gradient(circle at ${(x + 0.5) * 100}% ${(y + 0.5) * 100}%, rgba(255,255,255,0.22) 0%, transparent 55%)`;
-      });
-      card.addEventListener('mouseleave', () => {
-        card.style.transform = '';
-        shine.style.background = '';
-      });
-    });
-  }
-
-  /* ── Gallery drag scroll ── */
+  /* Product tilt handled by WebGL (product-gl.js) */
   const galleryTrack = document.getElementById('galleryTrack');
   if (galleryTrack) {
     let isDown = false;

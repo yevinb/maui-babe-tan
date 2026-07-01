@@ -43,6 +43,89 @@ button { font: inherit; cursor: pointer; border: none; background: none; color: 
   margin: 0 auto;
 }
 
+/* Global WebGL ambient layer */
+.ambient-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.55;
+}
+main {
+  position: relative;
+  z-index: 1;
+}
+.header { z-index: 100; }
+.footer { position: relative; z-index: 1; }
+
+/* Scroll-driven 3D sections */
+html.scroll-3d-active main {
+  perspective: 1400px;
+  perspective-origin: 50% 50%;
+}
+[data-scroll-3d] {
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+  overflow: visible;
+}
+.scroll-3d-inner {
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+  transition: opacity 0.1s linear;
+}
+
+/* WebGL image distortion */
+[data-gl-distort] {
+  position: relative;
+  overflow: hidden;
+}
+.gl-distort-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+[data-gl-distort] img {
+  transition: opacity 0.6s var(--ease);
+}
+.gl-distort-active img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* WebGL product cards */
+.product-visual[data-gl-card] {
+  position: relative;
+}
+.product-gl-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  cursor: grab;
+}
+.product-gl-canvas:active { cursor: grabbing; }
+.product-visual[data-gl-card] img {
+  transition: opacity 0.5s var(--ease);
+}
+
+/* Gallery 3D carousel */
+.gallery-track {
+  transform-style: preserve-3d;
+}
+.gallery-slide {
+  transform-style: preserve-3d;
+  transition: transform 0.15s var(--ease-out), opacity 0.15s var(--ease-out);
+  will-change: transform, opacity;
+}
+
 /* Grain */
 .grain {
   position: fixed;
@@ -1292,6 +1375,10 @@ button { font: inherit; cursor: pointer; border: none; background: none; color: 
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+  .ambient-canvas { opacity: 0.3; }
+  [data-scroll-3d] .scroll-3d-inner,
+  [data-scroll-3d] { transform: none !important; opacity: 1 !important; }
+  .gallery-slide { transform: none !important; opacity: 1 !important; }
   .hero-bg-img { animation: none !important; transform: scale(1.06); }
   .hero-bg-video { animation: none !important; }
   .hero-bg-layers::before { display: none; }
