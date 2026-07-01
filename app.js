@@ -105,17 +105,23 @@
   );
   reveals.forEach((el) => observer.observe(el));
 
-  /* ── Product tilt ── */
+  /* ── Product tilt (3D) ── */
   if (window.matchMedia('(hover: hover)').matches) {
     document.querySelectorAll('[data-tilt]').forEach((card) => {
+      const shine = document.createElement('div');
+      shine.className = 'tilt-shine';
+      card.appendChild(shine);
+
       card.addEventListener('mousemove', (e) => {
         const rect = card.getBoundingClientRect();
         const x = (e.clientX - rect.left) / rect.width - 0.5;
         const y = (e.clientY - rect.top) / rect.height - 0.5;
-        card.style.transform = `perspective(800px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg)`;
+        card.style.transform = `perspective(1000px) rotateY(${x * 12}deg) rotateX(${-y * 12}deg) translateZ(8px)`;
+        shine.style.background = `radial-gradient(circle at ${(x + 0.5) * 100}% ${(y + 0.5) * 100}%, rgba(255,255,255,0.22) 0%, transparent 55%)`;
       });
       card.addEventListener('mouseleave', () => {
         card.style.transform = '';
+        shine.style.background = '';
       });
     });
   }
