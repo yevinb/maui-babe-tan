@@ -179,23 +179,23 @@
   );
   reveals.forEach((el) => observer.observe(el));
 
-  /* ── Product 3D tilt ── */
+  /* ── Product image 3D tilt ── */
   if (window.matchMedia('(hover: hover)').matches) {
-    document.querySelectorAll('[data-tilt]').forEach((card) => {
+    document.querySelectorAll('.product-visual[data-tilt]').forEach((visual) => {
       const shine = document.createElement('div');
       shine.className = 'tilt-shine';
-      card.appendChild(shine);
+      visual.appendChild(shine);
 
-      card.addEventListener('mousemove', (e) => {
-        const rect = card.getBoundingClientRect();
+      visual.addEventListener('mousemove', (e) => {
+        const rect = visual.getBoundingClientRect();
         const x = (e.clientX - rect.left) / rect.width - 0.5;
         const y = (e.clientY - rect.top) / rect.height - 0.5;
-        card.style.transform = `perspective(1000px) rotateY(${x * 10}deg) rotateX(${-y * 10}deg) translateZ(6px)`;
-        shine.style.background = `radial-gradient(circle at ${(x + 0.5) * 100}% ${(y + 0.5) * 100}%, rgba(255,255,255,0.2) 0%, transparent 55%)`;
+        visual.style.transform = `perspective(900px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg) scale(1.02)`;
+        shine.style.background = `radial-gradient(circle at ${(x + 0.5) * 100}% ${(y + 0.5) * 100}%, rgba(255,255,255,0.18) 0%, transparent 55%)`;
         shine.style.opacity = '1';
       });
-      card.addEventListener('mouseleave', () => {
-        card.style.transform = '';
+      visual.addEventListener('mouseleave', () => {
+        visual.style.transform = '';
         shine.style.opacity = '0';
       });
     });

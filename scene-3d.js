@@ -1,8 +1,8 @@
-import { initBottleScene } from './bottle-3d.js';
-import { initLiveBeach } from './live-beach.js';
-import { initGlDistort } from './gl-distort.js';
-import { initGallery3D } from './gallery-3d.js';
-import { initScrollEffects } from './scroll-effects.js';
+import { initBottleScene } from './bottle-3d.js?v=23';
+import { initLiveBeach } from './live-beach.js?v=23';
+import { initGlDistort } from './gl-distort.js?v=23';
+import { initGallery3D } from './gallery-3d.js?v=23';
+import { initScrollEffects } from './scroll-effects.js?v=23';
 
 const scenes = [];
 

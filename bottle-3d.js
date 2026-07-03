@@ -1,5 +1,39 @@
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 
+function createLabelTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+
+  const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  grad.addColorStop(0, '#F5D78E');
+  grad.addColorStop(0.45, '#F2C94C');
+  grad.addColorStop(1, '#D4A43A');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.strokeStyle = 'rgba(28, 20, 16, 0.12)';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(24, 24, canvas.width - 48, canvas.height - 48);
+
+  ctx.fillStyle = '#1C1410';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = '700 148px Georgia, "Times New Roman", serif';
+  ctx.fillText('Maui', canvas.width / 2, 168);
+  ctx.fillText('Babe', canvas.width / 2, 332);
+
+  ctx.font = '600 38px Georgia, "Times New Roman", serif';
+  ctx.letterSpacing = '0.18em';
+  ctx.fillText('BROWNING LOTION', canvas.width / 2, 430);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 8;
+  return texture;
+}
+
 export function initBottleScene(canvas) {
   if (!canvas) return null;
 
@@ -19,6 +53,7 @@ export function initBottleScene(canvas) {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.28;
+  const maxAniso = renderer.capabilities.getMaxAnisotropy();
 
   const bottle = new THREE.Group();
 
@@ -28,15 +63,6 @@ export function initBottleScene(canvas) {
     metalness: 0.05,
     clearcoat: 0.6,
     clearcoatRoughness: 0.2,
-  });
-  const goldMat = new THREE.MeshPhysicalMaterial({
-    color: 0xe8b84a,
-    roughness: 0.28,
-    metalness: 0.15,
-    clearcoat: 0.8,
-    clearcoatRoughness: 0.15,
-    emissive: 0xe8b84a,
-    emissiveIntensity: 0.08,
   });
   const liquidMat = new THREE.MeshPhysicalMaterial({
     color: 0x5c3d2e,
@@ -59,8 +85,21 @@ export function initBottleScene(canvas) {
   body.position.y = 0.05;
   bottle.add(body);
 
-  const label = new THREE.Mesh(new THREE.CylinderGeometry(0.735, 0.735, 1.05, 48, 1, true), goldMat);
-  label.position.y = 0.15;
+  const labelTex = createLabelTexture();
+  labelTex.anisotropy = maxAniso;
+  const labelMat = new THREE.MeshPhysicalMaterial({
+    map: labelTex,
+    color: 0xffffff,
+    side: THREE.DoubleSide,
+    roughness: 0.32,
+    metalness: 0.08,
+    clearcoat: 0.85,
+    clearcoatRoughness: 0.12,
+  });
+
+  const label = new THREE.Mesh(new THREE.PlaneGeometry(1.05, 1.25), labelMat);
+  label.position.set(0, 0.1, 0.79);
+  label.renderOrder = 2;
   bottle.add(label);
 
   const liquid = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.75, 1.8, 40), liquidMat);

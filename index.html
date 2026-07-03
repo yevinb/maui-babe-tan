@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Pinyon+Script&display=swap" rel="stylesheet">
   <link rel="preload" href="assets/hero-beach.jpg" as="image">
   <link rel="preload" href="assets/hero-beach.mp4" as="video" type="video/mp4">
-  <link rel="stylesheet" href="styles.css?v=21">
+  <link rel="stylesheet" href="styles.css?v=23">
 </head>
 <body>
 
@@ -38,7 +38,7 @@
     <div class="loader-center">
       <img src="assets/brand-avatar.jpg" alt="" class="loader-avatar" width="80" height="80">
       <span class="loader-brand">Maui Babe</span>
-      <span class="loader-tag">Kuwait City · Authentic Stock</span>
+      <span class="loader-tag">Established Maui · Kuwait City</span>
       <div class="loader-bar" aria-hidden="true"><div class="loader-bar-fill" id="loaderBar"></div></div>
       <span class="loader-pct" id="loaderPct">0%</span>
     </div>
@@ -46,8 +46,10 @@
 
   <header class="header" id="header">
     <div class="header-inner">
-      <a href="#home" class="logo">
-        <img src="assets/brand-avatar.jpg" alt="Maui Babe Tan" width="40" height="40">
+      <a href="#home" class="logo" aria-label="Maui Babe Tan home">
+        <span class="logo-frame">
+          <img src="assets/brand-avatar.jpg" alt="Maui Babe Tan" class="logo-mark" width="40" height="40">
+        </span>
         <span class="logo-word">Maui Babe</span>
       </a>
       <nav class="nav" aria-label="Main">
@@ -131,6 +133,7 @@
         </div>
         <div class="hero-showcase reveal" data-delay="4">
           <div class="hero-3d-frame">
+            <span class="hero-heritage">Est. Maui</span>
             <div class="hero-3d-stage" id="hero3d">
               <canvas id="bottleCanvas" aria-label="Interactive 3D Maui Babe bottle"></canvas>
               <div class="hero-3d-glow" aria-hidden="true"></div>
@@ -248,7 +251,7 @@
       </div>
       <div class="product-showcase">
         <article class="product product--editorial reveal">
-          <div class="product-visual">
+          <div class="product-visual" data-tilt>
             <img src="assets/product-pool.jpg" alt="Browning Lotion" width="800" height="1000" loading="lazy">
             <div class="product-overlay">
               <span class="product-num">01</span>
@@ -265,7 +268,7 @@
           </div>
         </article>
         <article class="product product--editorial reveal" data-delay="1">
-          <div class="product-visual">
+          <div class="product-visual" data-tilt>
             <img src="assets/product-sun.jpg" alt="After Browning Lotion" width="800" height="1000" loading="lazy">
             <div class="product-overlay">
               <span class="product-num">02</span>
@@ -282,7 +285,7 @@
           </div>
         </article>
         <article class="product product--editorial reveal" data-delay="2">
-          <div class="product-visual">
+          <div class="product-visual" data-tilt>
             <img src="assets/product-set.jpg" alt="Complete Tan Set" width="800" height="1000" loading="lazy">
             <div class="product-overlay">
               <span class="product-num">03</span>
@@ -516,7 +519,7 @@
     <div class="container footer-top">
       <div class="footer-brand">
         <span class="footer-logo">Maui Babe Tan</span>
-        <p>Authentic Maui Babe tanning products in Kuwait.</p>
+        <p>Kuwait's dedicated source for authentic Hawaiian browning lotion — delivered with care, ordered in seconds.</p>
       </div>
       <div class="footer-cols">
         <div>
@@ -546,10 +549,10 @@
   </a>
 
   <script type="module">
-    import { initLoaderWave } from './loader-wave.js?v=21';
+    import { initLoaderWave } from './loader-wave.js?v=23';
     window.setLoaderProgress = initLoaderWave();
   </script>
-  <script src="app.js?v=21"></script>
-  <script type="module" src="scene-3d.js?v=21"></script>
+  <script src="app.js?v=23"></script>
+  <script type="module" src="scene-3d.js?v=23"></script>
 </body>
 </html>
