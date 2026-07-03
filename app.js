@@ -17,7 +17,7 @@
   const CRITICAL_ASSETS = [
     'assets/hero-beach.jpg',
     'assets/hero-beach.mp4',
-    'assets/logo-avatar.jpg',
+    'assets/brand-avatar.jpg',
     'assets/product-pool.jpg',
     'assets/gallery-poolside.jpg',
   ];
