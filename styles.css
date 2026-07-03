@@ -266,20 +266,14 @@ button { font: inherit; cursor: pointer; border: none; background: none; color: 
   transition: transform 1.1s var(--ease);
 }
 .loader.done .loader-center { opacity: 0; transition: opacity 0.4s; }
-.loader-avatar-frame {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  overflow: hidden;
+.loader-logo {
+  width: 72px;
+  height: 72px;
   display: block;
+  object-fit: contain;
+  object-position: center;
   flex-shrink: 0;
-  box-shadow: 0 0 0 6px rgba(232, 184, 74, 0.12), 0 12px 40px rgba(14,10,8,0.4);
-  border: 2px solid var(--gold);
-  background-color: #fff;
-  background-image: url('assets/brand-avatar.jpg');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 132%;
+  filter: drop-shadow(0 8px 24px rgba(14, 10, 8, 0.45));
 }
 .loader-brand {
   font-family: var(--script);
