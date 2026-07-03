@@ -86,6 +86,7 @@
     loader?.classList.add('done');
     document.body.style.overflow = '';
     setTimeout(() => loader?.remove(), 1200);
+    window.dispatchEvent(new CustomEvent('hero:ready'));
     document.querySelectorAll('.reveal').forEach((el, i) => {
       if (el.closest('.hero')) {
         setTimeout(() => el.classList.add('visible'), 150 + i * 80);

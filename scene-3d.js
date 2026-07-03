@@ -10,12 +10,21 @@ function boot() {
   const bottle = document.getElementById('bottleCanvas');
   if (bottle) scenes.push(initBottleScene(bottle));
 
-  const heroBg = document.getElementById('heroBg');
-  if (heroBg) scenes.push(initLiveBeach(heroBg));
-
   scenes.push(initGlDistort());
   scenes.push(initGallery3D());
   scenes.push(initScrollEffects());
+
+  const initOcean = () => {
+    const heroBg = document.getElementById('heroBg');
+    if (heroBg) scenes.push(initLiveBeach(heroBg));
+  };
+
+  const loader = document.getElementById('loader');
+  if (!loader || loader.classList.contains('done')) {
+    initOcean();
+  } else {
+    window.addEventListener('hero:ready', initOcean, { once: true });
+  }
 }
 
 if (document.readyState === 'loading') {
