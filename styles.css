@@ -266,16 +266,21 @@ button { font: inherit; cursor: pointer; border: none; background: none; color: 
   transition: transform 1.1s var(--ease);
 }
 .loader.done .loader-center { opacity: 0; transition: opacity 0.4s; }
-.loader-avatar {
+.loader-avatar-frame {
   width: 80px;
   height: 80px;
-  display: block;
   border-radius: 50%;
-  object-fit: contain;
-  object-position: center;
-  background: var(--gold);
-  padding: 10px;
+  overflow: hidden;
+  display: block;
+  flex-shrink: 0;
   box-shadow: 0 0 0 6px rgba(232, 184, 74, 0.12), 0 12px 40px rgba(14,10,8,0.4);
+}
+.loader-avatar {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
 }
 .loader-brand {
   font-family: var(--script);
@@ -349,21 +354,17 @@ button { font: inherit; cursor: pointer; border: none; background: none; color: 
   width: 40px;
   height: 40px;
   flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   border-radius: 50%;
   overflow: hidden;
   border: 1.5px solid var(--gold);
   box-shadow: 0 0 0 3px rgba(232, 184, 74, 0.15);
-  background: var(--gold);
-  padding: 5px;
+  background: #fff;
 }
 .logo-mark {
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
 }
 .logo-word {
