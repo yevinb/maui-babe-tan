@@ -208,7 +208,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; color: 
   z-index: 10000;
   pointer-events: all;
   overflow: hidden;
-  background: #0a4f62;
+  background: #041e35;
 }
 .loader.done {
   pointer-events: none;
@@ -226,20 +226,33 @@ button { font: inherit; cursor: pointer; border: none; background: none; color: 
   width: 100%;
   height: 100%;
   object-fit: cover;
+  filter: saturate(1.3) contrast(1.06) brightness(1.04) hue-rotate(-4deg);
+}
+.loader-ocean::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(4, 30, 53, 0.25) 0%, transparent 35%),
+    linear-gradient(180deg, transparent 30%, rgba(8, 90, 130, 0.35) 55%, rgba(12, 130, 165, 0.25) 100%),
+    radial-gradient(ellipse at 50% 70%, rgba(30, 160, 200, 0.2) 0%, transparent 60%);
+  mix-blend-mode: soft-light;
 }
 .loader-wave-canvas {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: 1;
+  z-index: 2;
   pointer-events: none;
-  mix-blend-mode: screen;
+  mix-blend-mode: soft-light;
 }
 .loader-ocean-vignette {
   position: absolute;
   inset: 0;
-  z-index: 2;
+  z-index: 3;
   background:
     linear-gradient(180deg, rgba(14,10,8,0.45) 0%, transparent 30%),
     linear-gradient(180deg, transparent 50%, rgba(14,10,8,0.55) 100%);
@@ -516,9 +529,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; color: 
   transition: opacity 1.2s var(--ease);
 }
 .hero-bg-video.playing {
-  opacity: 1;
-  animation: liveBeachDrift 32s ease-in-out infinite alternate;
-  will-change: transform;
+  opacity: 0;
 }
 .hero-bg-video.hidden { display: none; }
 .hero-bg-img {
@@ -528,21 +539,38 @@ button { font: inherit; cursor: pointer; border: none; background: none; color: 
 }
 .hero-bg-img.hidden { opacity: 0; visibility: hidden; }
 .hero-water-canvas {
-  z-index: 3;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 1s var(--ease);
+  transition: opacity 1.2s var(--ease);
 }
-.hero-water-canvas.tide-active {
+.hero-water-canvas.ocean-active {
   opacity: 1;
-  mix-blend-mode: screen;
+  animation: liveBeachDrift 32s ease-in-out infinite alternate;
+  will-change: transform;
 }
+.hero-water-canvas.tide-active,
 .hero-water-canvas.webgl-active {
   opacity: 1;
   mix-blend-mode: normal;
   animation: liveBeachDrift 28s ease-in-out infinite alternate;
 }
 .hero-water-canvas.hidden { display: none; }
+.hero-bg-layers::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, transparent 35%, rgba(8, 100, 140, 0.12) 50%, rgba(15, 140, 175, 0.08) 65%, transparent 80%);
+  mix-blend-mode: color;
+}
 @keyframes liveBeachDrift {
   0% { transform: scale(1.06) translate3d(0, 0, 0); }
   100% { transform: scale(1.1) translate3d(-1.2%, -0.6%, 0); }
@@ -618,11 +646,11 @@ button { font: inherit; cursor: pointer; border: none; background: none; color: 
 .hero-gold-wash {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 2;
   pointer-events: none;
   background:
-    radial-gradient(ellipse at 20% 80%, rgba(232,184,74,0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 85% 30%, rgba(255,200,120,0.08) 0%, transparent 45%);
+    radial-gradient(ellipse at 15% 15%, rgba(232,184,74,0.1) 0%, transparent 40%),
+    radial-gradient(ellipse at 90% 20%, rgba(255,200,120,0.06) 0%, transparent 35%);
 }
 .hero-inner {
   position: relative;

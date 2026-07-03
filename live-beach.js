@@ -7,54 +7,129 @@ const VERT = `
   }
 `;
 
-const FRAG = `
-  precision mediump float;
+const OCEAN_FRAG = `
+  precision highp float;
+
   uniform sampler2D uTex;
   uniform float uTime;
+  uniform vec2 uResolution;
   varying vec2 vUv;
+
+  const vec3 DEEP_SAPPHIRE = vec3(0.01, 0.14, 0.32);
+  const vec3 TURQUOISE     = vec3(0.08, 0.68, 0.78);
+  const vec3 AQUA_GLOW     = vec3(0.45, 0.92, 1.0);
+  const vec3 SKY_CYAN      = vec3(0.55, 0.82, 0.95);
+
+  float hash(vec2 p) {
+    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+  }
+
+  float noise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    float a = hash(i);
+    float b = hash(i + vec2(1.0, 0.0));
+    float c = hash(i + vec2(0.0, 1.0));
+    float d = hash(i + vec2(1.0, 1.0));
+    return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+  }
+
+  float fbm(vec2 p) {
+    float v = 0.0;
+    float a = 0.5;
+    for (int i = 0; i < 4; i++) {
+      v += a * noise(p);
+      p *= 2.1;
+      a *= 0.5;
+    }
+    return v;
+  }
 
   float wave(float x, float t, float freq, float speed, float amp) {
     return sin(x * freq + t * speed) * amp
-         + sin(x * freq * 1.7 - t * speed * 1.3) * amp * 0.5;
+         + sin(x * freq * 1.71 - t * speed * 1.35) * amp * 0.48
+         + sin(x * freq * 0.42 + t * speed * 0.65) * amp * 0.22;
   }
 
   void main() {
     vec2 uv = vUv;
     float t = uTime;
-    float tide = sin(t * 0.35) * 0.028;
+    float aspect = uResolution.x / max(uResolution.y, 1.0);
+    float ax = uv.x * aspect;
 
-    float skyMask = smoothstep(0.58, 0.72, uv.y);
-    float waterMask = smoothstep(0.32, 0.44, uv.y) * (1.0 - smoothstep(0.56, 0.66, uv.y));
-    float shoreMask = smoothstep(0.30, 0.40, uv.y) * (1.0 - smoothstep(0.44, 0.52, uv.y));
-    float sandMask = 1.0 - smoothstep(0.18, 0.34, uv.y);
+    float skyMask   = smoothstep(0.60, 0.76, uv.y);
+    float waterMask = smoothstep(0.26, 0.40, uv.y) * (1.0 - smoothstep(0.50, 0.64, uv.y));
+    float deepWater = smoothstep(0.40, 0.54, uv.y) * waterMask;
+    float shoreMask = smoothstep(0.26, 0.36, uv.y) * (1.0 - smoothstep(0.36, 0.46, uv.y));
+    float sandMask  = 1.0 - smoothstep(0.10, 0.30, uv.y);
+
+    float tide = sin(t * 0.26) * 0.014 + sin(t * 0.41 + 1.3) * 0.006;
 
     vec2 d = uv;
     d.y += tide;
 
-    d.x += skyMask * sin(t * 0.12 + uv.y * 3.0) * 0.006;
-
-    float w = wave(uv.x, t, 18.0, 1.4, 0.018)
-            + wave(uv.x, t, 28.0, 2.0, 0.01)
-            + wave(uv.x, t, 8.0, 0.9, 0.025);
-    d.x += w * waterMask;
-    d.y += (wave(uv.x, t, 22.0, 1.8, 0.012) + sin(t * 0.8) * 0.008) * waterMask;
-
-    float foam = wave(uv.x, t, 35.0, 2.5, 0.007) + sin(uv.x * 50.0 - t * 3.0) * 0.004;
-    d.y += foam * shoreMask;
-
-    d.x += sin(uv.x * 40.0 + t * 2.5) * 0.003 * sandMask;
-    d.y += (sin(uv.x * 25.0 - t * 1.8) * 0.002 + tide * 0.5) * sandMask;
+    float wx = wave(ax, t, 12.0, 1.1, 0.016)
+             + wave(ax, t, 22.0, 1.7, 0.009)
+             + wave(ax, t, 7.5, 0.85, 0.022);
+    float wy = wave(ax, t, 16.0, 1.4, 0.011) + sin(t * 0.75) * 0.006;
+    d.x += wx * waterMask;
+    d.y += wy * waterMask;
+    d.x += sin(ax * 48.0 + t * 2.2) * 0.0025 * shoreMask;
 
     d = clamp(d, 0.001, 0.999);
     vec3 col = texture2D(uTex, d).rgb;
+    float luma = dot(col, vec3(0.299, 0.587, 0.114));
 
-    float glint = pow(max(0.0, sin(uv.x * 120.0 + t * 3.5) * sin(uv.y * 80.0 - t * 2.0)), 16.0);
-    col += vec3(1.0, 0.95, 0.8) * glint * waterMask * 0.4;
+    // Luxury blue grade — push water toward sapphire / turquoise
+    vec3 graded = col;
+    graded.r *= 1.0 - waterMask * 0.18;
+    graded.g *= 1.0 + waterMask * 0.12;
+    graded.b *= 1.0 + waterMask * 0.32;
+    col = mix(col, graded, waterMask * 0.82);
 
-    float foamBright = pow(max(0.0, sin(uv.x * 60.0 - t * 2.8)), 5.0) * shoreMask;
-    col = mix(col, vec3(1.0), foamBright * 0.3);
+    vec3 deepLux = mix(col, DEEP_SAPPHIRE + col * vec3(0.45, 0.88, 1.15), 0.42);
+    col = mix(col, deepLux, deepWater * 0.55);
 
-    gl_FragColor = vec4(col, 1.0);
+    vec3 aquaMid = mix(col, TURQUOISE * 0.25 + col * 1.08, 0.3);
+    col = mix(col, aquaMid, waterMask * 0.28);
+
+    // Caustics — underwater luxury light dance
+    vec2 cUv = uv * vec2(14.0 * aspect, 10.0);
+    float caustic = fbm(cUv + t * 0.35) * fbm(cUv * 1.4 - t * 0.28 + 4.0);
+    caustic = pow(caustic, 2.2);
+    col += AQUA_GLOW * caustic * (deepWater * 0.16 + waterMask * 0.06);
+
+    // Surface shimmer streaks
+    float streak = sin(ax * 90.0 - t * 2.8 + uv.y * 55.0) * sin(uv.y * 70.0 + t * 2.0);
+    streak = pow(max(0.0, streak), 10.0);
+    col += vec3(0.85, 0.97, 1.0) * streak * waterMask * 0.42;
+
+    // Broad sun glint patches
+    float glint = pow(max(0.0, sin(ax * 55.0 + t * 1.6) * sin(uv.y * 45.0 - t * 1.2)), 14.0);
+    col += vec3(1.0, 0.98, 0.92) * glint * waterMask * 0.28;
+
+    // Shore foam — crisp white-blue
+    float foamWave = wave(ax, t, 30.0, 2.2, 0.007) + sin(ax * 65.0 - t * 3.2) * 0.004;
+    float shoreY = 0.37 + foamWave + tide * 1.5;
+    float foamLine = smoothstep(0.018, 0.0, abs(uv.y - shoreY));
+    float foamBody = smoothstep(shoreY + 0.02, shoreY - 0.06, uv.y) * shoreMask;
+    col = mix(col, vec3(0.92, 0.98, 1.0), foamLine * shoreMask * 0.75);
+    col = mix(col, mix(col, vec3(0.75, 0.93, 0.98), 0.5), foamBody * 0.22);
+
+    // Wet sand — reflective turquoise wash
+    float wetSand = sandMask * (0.55 + 0.45 * sin(ax * 8.0 + t * 0.9));
+    col = mix(col, col * vec3(0.88, 0.96, 1.05) + TURQUOISE * 0.06, wetSand * 0.2);
+
+    // Sky — soft cyan horizon blend
+    vec3 skyCol = mix(col, col * vec3(0.88, 0.94, 1.12) + SKY_CYAN * 0.04, skyMask * 0.5);
+    col = mix(col, skyCol, skyMask);
+
+    // Saturation & clarity
+    col = mix(vec3(luma), col, 1.0 + waterMask * 0.32);
+    col = pow(max(col, vec3(0.0)), vec3(0.94));
+
+    gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
   }
 `;
 
@@ -63,6 +138,7 @@ function compileShader(gl, type, src) {
   gl.shaderSource(s, src);
   gl.compileShader(s);
   if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+    console.warn('Shader compile:', gl.getShaderInfoLog(s));
     gl.deleteShader(s);
     return null;
   }
@@ -77,180 +153,22 @@ function createProgram(gl, vs, fs) {
   gl.attachShader(p, v);
   gl.attachShader(p, f);
   gl.linkProgram(p);
-  return gl.getProgramParameter(p, gl.LINK_STATUS) ? p : null;
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
+    console.warn('Program link:', gl.getProgramInfoLog(p));
+    return null;
+  }
+  return p;
 }
 
-function waveY(x, t, base, amp, freq, speed) {
-  return (
-    base +
-    Math.sin(x * freq + t * speed) * amp +
-    Math.sin(x * freq * 1.6 - t * speed * 1.2) * amp * 0.5 +
-    Math.sin(x * freq * 0.45 + t * speed * 0.7) * amp * 0.3
-  );
-}
-
-function initTideOverlay(canvas, wrap) {
-  const ctx = canvas.getContext('2d', { alpha: true });
-  if (!ctx) return null;
-
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let width = 0;
-  let height = 0;
-  let dpr = 1;
-  let running = true;
-  let animId;
-  let start = performance.now();
-  // Shoreline position — tuned for beach video (waves at bottom)
-  let shoreLine = 0.58;
-
-  function resize() {
-    const rect = wrap.getBoundingClientRect();
-    dpr = Math.min(window.devicePixelRatio, 2);
-    width = rect.width;
-    height = rect.height;
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
-    canvas.style.width = width + 'px';
-    canvas.style.height = height + 'px';
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
-
-  function drawTide(t) {
-    ctx.clearRect(0, 0, width, height);
-
-    // Slow tide cycle — waterline moves up and down the sand
-    const tideCycle = Math.sin(t * 0.32);
-    const tidePull = Math.sin(t * 0.32 + 1.2) * 0.5 + 0.5;
-    const baseShore = height * (shoreLine + tideCycle * 0.045);
-
-    // Deep ocean swell (higher on screen)
-    const swellY = height * (0.38 + tideCycle * 0.015);
-    ctx.beginPath();
-    ctx.moveTo(0, height);
-    for (let x = 0; x <= width; x += 3) {
-      ctx.lineTo(x, waveY(x, t, swellY, 10, 0.006, 0.7));
-    }
-    ctx.lineTo(width, 0);
-    ctx.lineTo(0, 0);
-    ctx.closePath();
-    const swellGrad = ctx.createLinearGradient(0, swellY - 30, 0, swellY + 80);
-    swellGrad.addColorStop(0, 'rgba(30, 160, 200, 0.08)');
-    swellGrad.addColorStop(0.5, 'rgba(60, 190, 220, 0.12)');
-    swellGrad.addColorStop(1, 'rgba(100, 220, 255, 0)');
-    ctx.fillStyle = swellGrad;
-    ctx.fill();
-
-    // Rolling wave layers washing toward shore
-    const layers = [
-      { amp: 14, freq: 0.009, speed: 1.1, offset: 0, foam: 0.28 },
-      { amp: 10, freq: 0.013, speed: 1.5, offset: 18, foam: 0.35 },
-      { amp: 7, freq: 0.019, speed: 2.0, offset: 32, foam: 0.42 },
-      { amp: 5, freq: 0.026, speed: 2.6, offset: 48, foam: 0.5 },
-    ];
-
-    layers.forEach((layer, i) => {
-      const layerBase = baseShore + layer.offset - tidePull * 25;
-      const phase = t + i * 0.8;
-
-      ctx.beginPath();
-      ctx.moveTo(0, height);
-      for (let x = 0; x <= width; x += 2) {
-        ctx.lineTo(x, waveY(x, phase, layerBase, layer.amp, layer.freq, layer.speed));
-      }
-      ctx.lineTo(width, height);
-      ctx.closePath();
-
-      const grad = ctx.createLinearGradient(0, layerBase - 25, 0, layerBase + 50);
-      grad.addColorStop(0, `rgba(255, 255, 255, ${layer.foam * 0.35})`);
-      grad.addColorStop(0.25, `rgba(200, 240, 255, ${layer.foam * 0.25})`);
-      grad.addColorStop(0.6, `rgba(120, 210, 240, ${layer.foam * 0.12})`);
-      grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-      ctx.fillStyle = grad;
-      ctx.fill();
-    });
-
-    // White foam crest line — the tide edge
-    ctx.beginPath();
-    for (let x = 0; x <= width; x += 2) {
-      const y = waveY(x, t * 1.3, baseShore - 8, 6, 0.022, 2.2);
-      if (x === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.strokeStyle = `rgba(255, 255, 255, ${0.35 + tidePull * 0.25})`;
-    ctx.lineWidth = 3 + tidePull * 4;
-    ctx.shadowColor = 'rgba(255,255,255,0.6)';
-    ctx.shadowBlur = 8;
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-
-    // Wet sand wash — tide receding leaves shimmer
-    const washY = baseShore + 20;
-    ctx.beginPath();
-    ctx.moveTo(0, height);
-    for (let x = 0; x <= width; x += 3) {
-      ctx.lineTo(x, washY + Math.sin(x * 0.03 + t * 1.5) * 6 + tideCycle * 12);
-    }
-    ctx.lineTo(width, height);
-    ctx.closePath();
-    const washGrad = ctx.createLinearGradient(0, washY - 5, 0, washY + 40);
-    washGrad.addColorStop(0, 'rgba(255, 255, 255, 0.12)');
-    washGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-    ctx.fillStyle = washGrad;
-    ctx.fill();
-
-    // Sun sparkles on moving water
-    const sparkleCount = width > 700 ? 8 : 5;
-    for (let i = 0; i < sparkleCount; i++) {
-      const phase = t * 0.5 + i * 2.1;
-      const sx = (Math.sin(phase * 0.4 + i) * 0.5 + 0.5) * width;
-      const sy = swellY + 40 + Math.sin(phase) * 30 + i * 15;
-      const size = 2 + Math.sin(phase * 2) * 1.5;
-      ctx.globalAlpha = 0.2 + Math.sin(phase * 1.5) * 0.15;
-      ctx.fillStyle = '#fff8e0';
-      ctx.beginPath();
-      ctx.ellipse(sx, sy, size * 3, size, 0, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.globalAlpha = 1;
-  }
-
-  function animate(now) {
-    if (!running) return;
-    animId = requestAnimationFrame(animate);
-    const t = prefersReduced ? 0 : (now - start) * 0.001;
-    drawTide(t);
-  }
-
-  resize();
-  window.addEventListener('resize', resize);
-  canvas.classList.add('tide-active');
-
-  const observer = new IntersectionObserver(
-    ([entry]) => {
-      running = entry.isIntersecting;
-      if (running) animate(performance.now());
-    },
-    { threshold: 0.05 }
-  );
-  observer.observe(wrap);
-
-  animate(start);
-
-  return {
-    destroy() {
-      running = false;
-      cancelAnimationFrame(animId);
-      observer.disconnect();
-      window.removeEventListener('resize', resize);
-    },
-  };
-}
-
-function startWebGLFallback(canvas, img, wrap, prefersReduced) {
-  const gl = canvas.getContext('webgl', { alpha: false, antialias: false });
+function startOceanRenderer(canvas, source, wrap, prefersReduced) {
+  const gl = canvas.getContext('webgl', {
+    alpha: false,
+    antialias: true,
+    powerPreference: 'high-performance',
+  });
   if (!gl) return null;
 
-  const program = createProgram(gl, VERT, FRAG);
+  const program = createProgram(gl, VERT, OCEAN_FRAG);
   if (!program) return null;
 
   const buf = gl.createBuffer();
@@ -260,6 +178,7 @@ function startWebGLFallback(canvas, img, wrap, prefersReduced) {
   const aPos = gl.getAttribLocation(program, 'aPos');
   const uTex = gl.getUniformLocation(program, 'uTex');
   const uTime = gl.getUniformLocation(program, 'uTime');
+  const uResolution = gl.getUniformLocation(program, 'uResolution');
 
   const texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -269,14 +188,26 @@ function startWebGLFallback(canvas, img, wrap, prefersReduced) {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
+  const isVideo = source.tagName === 'VIDEO';
   let texReady = false;
+
   const uploadTex = () => {
+    if (isVideo && source.readyState < 2) return;
     gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-    texReady = true;
+    try {
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
+      texReady = true;
+    } catch (_) { /* video not ready yet */ }
   };
-  if (img.complete) uploadTex();
-  else img.addEventListener('load', uploadTex);
+
+  if (isVideo) {
+    source.addEventListener('loadeddata', uploadTex);
+    source.addEventListener('canplay', uploadTex);
+  } else if (source.complete) {
+    uploadTex();
+  } else {
+    source.addEventListener('load', uploadTex);
+  }
 
   let running = true;
   let animId;
@@ -289,8 +220,8 @@ function startWebGLFallback(canvas, img, wrap, prefersReduced) {
     const dpr = Math.min(window.devicePixelRatio, 2);
     width = rect.width;
     height = rect.height;
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
+    canvas.width = Math.floor(width * dpr);
+    canvas.height = Math.floor(height * dpr);
     canvas.style.width = width + 'px';
     canvas.style.height = height + 'px';
     gl.viewport(0, 0, canvas.width, canvas.height);
@@ -298,12 +229,25 @@ function startWebGLFallback(canvas, img, wrap, prefersReduced) {
 
   resize();
   window.addEventListener('resize', resize);
-  canvas.classList.add('webgl-active');
-  img.classList.add('hidden');
+  canvas.classList.add('ocean-active');
 
   function draw(now) {
-    if (!running || !texReady) return;
+    if (!running) return;
     animId = requestAnimationFrame(draw);
+    if (!texReady) {
+      uploadTex();
+      if (!texReady) return;
+    }
+
+    if (isVideo && !source.paused && source.readyState >= 2) {
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      try {
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
+      } catch (_) { return; }
+    }
+
+    gl.clearColor(0.01, 0.12, 0.28, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
     gl.useProgram(program);
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.enableVertexAttribArray(aPos);
@@ -312,6 +256,7 @@ function startWebGLFallback(canvas, img, wrap, prefersReduced) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.uniform1i(uTex, 0);
     gl.uniform1f(uTime, prefersReduced ? 0 : (now - start) * 0.001);
+    gl.uniform2f(uResolution, width, height);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 
@@ -322,6 +267,7 @@ function startWebGLFallback(canvas, img, wrap, prefersReduced) {
       running = false;
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', resize);
+      canvas.classList.remove('ocean-active');
     },
   };
 }
@@ -334,18 +280,28 @@ export function initLiveBeach(wrap) {
   const canvas = wrap.querySelector('#beachWater');
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  let tideScene = null;
-  let webglScene = null;
+  let oceanScene = null;
   let videoObserver = null;
   let videoPlaying = false;
 
+  function activateOcean(source) {
+    if (!canvas || oceanScene) return;
+    oceanScene = startOceanRenderer(canvas, source, wrap, prefersReduced);
+    if (oceanScene) {
+      video?.classList.add('hidden');
+      img?.classList.add('hidden');
+    }
+  }
+
   function setupVideo() {
-    if (!video || prefersReduced) return;
+    if (!video || prefersReduced) {
+      if (img) activateOcean(img);
+      return;
+    }
 
     const onReady = () => {
       videoPlaying = true;
-      video.classList.add('playing');
-      img?.classList.add('hidden');
+      activateOcean(video);
     };
 
     video.muted = true;
@@ -358,7 +314,9 @@ export function initLiveBeach(wrap) {
 
     video.addEventListener('loadeddata', onReady, { once: true });
     video.addEventListener('canplay', onReady, { once: true });
-    video.addEventListener('error', () => startPhotoFallback(), { once: true });
+    video.addEventListener('error', () => {
+      if (img) activateOcean(img);
+    }, { once: true });
 
     if (video.readyState >= 2) play();
     else {
@@ -369,7 +327,7 @@ export function initLiveBeach(wrap) {
 
     videoObserver = new IntersectionObserver(
       ([entry]) => {
-        if (!video) return;
+        if (!video || !videoPlaying) return;
         if (entry.isIntersecting) video.play().catch(() => {});
         else video.pause();
       },
@@ -378,37 +336,19 @@ export function initLiveBeach(wrap) {
     videoObserver.observe(wrap);
 
     setTimeout(() => {
-      if (!videoPlaying) startPhotoFallback();
+      if (!videoPlaying && img) activateOcean(img);
     }, 3000);
   }
 
-  function startPhotoFallback() {
-    if (!canvas || !img || webglScene) return;
-    tideScene?.destroy();
-    tideScene = null;
-    canvas.classList.remove('tide-active');
-    video?.classList.add('hidden');
-    img.classList.remove('hidden');
-    webglScene = startWebGLFallback(canvas, img, wrap, prefersReduced);
-  }
-
-  function startTideOverlay() {
-    if (!canvas || tideScene) return;
-    // Tide overlay sits on top of video; WebGL fallback replaces the canvas entirely
-    if (!webglScene) {
-      tideScene = initTideOverlay(canvas, wrap);
-    }
-  }
-
   setupVideo();
-  startTideOverlay();
 
   return {
     destroy() {
-      tideScene?.destroy();
-      webglScene?.destroy();
+      oceanScene?.destroy();
       videoObserver?.disconnect();
       video?.pause();
+      video?.classList.remove('hidden');
+      img?.classList.remove('hidden');
     },
   };
 }

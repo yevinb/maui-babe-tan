@@ -60,7 +60,12 @@ export function initLoaderWave() {
   }
 
   function crestY(x, t, baseY, amp) {
-    return baseY + Math.sin(x * 0.008 + t * 1.6) * amp + Math.sin(x * 0.015 - t * 1.1) * amp * 0.45;
+    return (
+      baseY +
+      Math.sin(x * 0.008 + t * 1.6) * amp +
+      Math.sin(x * 0.015 - t * 1.1) * amp * 0.45 +
+      Math.sin(x * 0.004 + t * 0.7) * amp * 0.25
+    );
   }
 
   function drawWaveOverlay(t) {
@@ -69,20 +74,27 @@ export function initLoaderWave() {
 
     ctx.clearRect(0, 0, width, height);
 
-    // Wave travels bottom → top (ocean washing onto beach in the video)
     const startY = height * 1.05;
-    const endY = height * 0.15;
+    const endY = height * 0.12;
     const waveFront = startY + (endY - startY) * p;
 
-    // Wet sand trail behind the wave
-    ctx.fillStyle = 'rgba(120,200,220,0.12)';
+    // Deep sapphire wash behind the wave
+    const deepGrad = ctx.createLinearGradient(0, waveFront - 120, 0, height);
+    deepGrad.addColorStop(0, 'rgba(8, 80, 130, 0.35)');
+    deepGrad.addColorStop(0.4, 'rgba(12, 120, 165, 0.28)');
+    deepGrad.addColorStop(1, 'rgba(20, 160, 195, 0.15)');
+    ctx.fillStyle = deepGrad;
+    ctx.fillRect(0, waveFront - 60, width, height - waveFront + 60);
+
+    // Turquoise body fill
+    ctx.fillStyle = 'rgba(30, 150, 185, 0.18)';
     ctx.fillRect(0, waveFront, width, height - waveFront);
 
-    // Foam layers
+    // Luxury foam layers
     const layers = [
-      { offset: 40, alpha: 0.2, amp: 16 },
-      { offset: 20, alpha: 0.35, amp: 12 },
-      { offset: 0, alpha: 0.55, amp: 9 },
+      { offset: 50, alpha: 0.18, amp: 18, color: 'rgba(180, 235, 255,' },
+      { offset: 28, alpha: 0.32, amp: 13, color: 'rgba(210, 245, 255,' },
+      { offset: 8, alpha: 0.5, amp: 9, color: 'rgba(240, 252, 255,' },
     ];
 
     layers.forEach((layer, i) => {
@@ -94,27 +106,46 @@ export function initLoaderWave() {
       }
       ctx.lineTo(width, height);
       ctx.closePath();
-      const grad = ctx.createLinearGradient(0, base - 30, 0, base + 50);
-      grad.addColorStop(0, `rgba(255,255,255,${layer.alpha})`);
-      grad.addColorStop(0.5, `rgba(200,240,255,${layer.alpha * 0.6})`);
-      grad.addColorStop(1, 'rgba(255,255,255,0)');
+
+      const grad = ctx.createLinearGradient(0, base - 40, 0, base + 60);
+      grad.addColorStop(0, `${layer.color}${layer.alpha})`);
+      grad.addColorStop(0.35, `rgba(100, 200, 230, ${layer.alpha * 0.55})`);
+      grad.addColorStop(0.7, `rgba(40, 150, 190, ${layer.alpha * 0.2})`);
+      grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
       ctx.fillStyle = grad;
       ctx.fill();
     });
 
-    // Bright crest
+    // Bright aqua crest line
     ctx.beginPath();
     for (let x = 0; x <= width; x += 2) {
-      const y = crestY(x, t * 1.3, waveFront, 7);
+      const y = crestY(x, t * 1.3, waveFront, 8);
       if (x === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
     }
-    ctx.strokeStyle = `rgba(255,255,255,${0.45 + p * 0.4})`;
-    ctx.lineWidth = 3 + p * 4;
-    ctx.shadowColor = 'rgba(255,255,255,0.7)';
-    ctx.shadowBlur = 10;
+    const crestAlpha = 0.5 + p * 0.45;
+    ctx.strokeStyle = `rgba(220, 248, 255, ${crestAlpha})`;
+    ctx.lineWidth = 2.5 + p * 5;
+    ctx.shadowColor = 'rgba(120, 220, 255, 0.9)';
+    ctx.shadowBlur = 14;
     ctx.stroke();
     ctx.shadowBlur = 0;
+
+    // Sparkles on water surface above wave
+    const sparkleCount = width > 700 ? 12 : 7;
+    for (let i = 0; i < sparkleCount; i++) {
+      const phase = t * 0.6 + i * 1.7;
+      const sx = (Math.sin(phase * 0.35 + i * 2.3) * 0.5 + 0.5) * width;
+      const sy = waveFront - 40 - i * 18 + Math.sin(phase) * 12;
+      if (sy < 0) continue;
+      const size = 1.5 + Math.sin(phase * 2.2) * 1.2;
+      ctx.globalAlpha = 0.15 + Math.sin(phase * 1.8) * 0.12;
+      ctx.fillStyle = '#c8f0ff';
+      ctx.beginPath();
+      ctx.ellipse(sx, sy, size * 4, size * 0.8, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
   }
 
   function draw(t) {
