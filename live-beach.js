@@ -7,7 +7,6 @@ const VERT = `
   }
 `;
 
-/* Real video passthrough — subtle refraction only, no fake colours or caustics */
 const NATURAL_FRAG = `
   precision mediump float;
   uniform sampler2D uTex;
@@ -16,16 +15,17 @@ const NATURAL_FRAG = `
 
   void main() {
     vec2 uv = vUv;
-    float water = smoothstep(0.15, 0.30, uv.y) * (1.0 - smoothstep(0.50, 0.65, uv.y));
-    float t = uTime * 0.4;
-    vec2 offset = vec2(
-      sin(uv.x * 18.0 + t) * 0.0012,
-      sin(uv.x * 12.0 - t * 0.7) * 0.0008
+    float water = smoothstep(0.12, 0.28, uv.y) * (1.0 - smoothstep(0.48, 0.66, uv.y));
+    float t = uTime;
+
+    vec2 ripple = vec2(
+      sin(uv.x * 22.0 + t * 0.9) * 0.0025,
+      cos(uv.x * 16.0 - t * 0.65) * 0.0018
     ) * water;
 
-    vec3 col = texture2D(uTex, clamp(uv + offset, 0.002, 0.998)).rgb;
+    vec3 col = texture2D(uTex, clamp(uv + ripple, 0.002, 0.998)).rgb;
     float luma = dot(col, vec3(0.299, 0.587, 0.114));
-    col = mix(vec3(luma), col, 1.05);
+    col = mix(vec3(luma), col, 1.06);
     gl_FragColor = vec4(col, 1.0);
   }
 `;
@@ -34,7 +34,11 @@ function compileShader(gl, type, src) {
   const s = gl.createShader(type);
   gl.shaderSource(s, src);
   gl.compileShader(s);
-  return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null;
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+    console.warn('[ocean] shader:', gl.getShaderInfoLog(s));
+    return null;
+  }
+  return s;
 }
 
 function linkProgram(gl, vs, fs) {
@@ -45,16 +49,17 @@ function linkProgram(gl, vs, fs) {
   gl.attachShader(p, v);
   gl.attachShader(p, f);
   gl.linkProgram(p);
-  return gl.getProgramParameter(p, gl.LINK_STATUS) ? p : null;
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) return null;
+  return p;
 }
 
 function setupDirectVideo(wrap, video, img) {
   wrap.classList.add('video-fallback');
+  wrap.classList.remove('webgl-active');
   const canvas = wrap.querySelector('#beachWater');
   canvas?.classList.remove('natural-active');
 
   if (video) {
-    video.classList.remove('hidden');
     video.muted = true;
     video.playsInline = true;
     video.loop = true;
@@ -64,7 +69,7 @@ function setupDirectVideo(wrap, video, img) {
     if (video.readyState >= 2) play();
     else video.load();
   } else if (img) {
-    img.classList.remove('hidden');
+    img.style.opacity = '1';
   }
 
   const observer = new IntersectionObserver(
@@ -77,25 +82,20 @@ function setupDirectVideo(wrap, video, img) {
   );
   observer.observe(wrap);
 
-  return {
-    destroy() {
-      observer.disconnect();
-      video?.pause();
-    },
-  };
+  return { destroy() { observer.disconnect(); video?.pause(); } };
 }
 
 function startNaturalRenderer(canvas, wrap, video, img, prefersReduced) {
   const gl =
-    canvas.getContext('webgl', { alpha: false, antialias: false, powerPreference: 'high-performance' }) ||
+    canvas.getContext('webgl', { alpha: false, antialias: true, powerPreference: 'high-performance' }) ||
     canvas.getContext('experimental-webgl');
   if (!gl) return null;
 
   const program = linkProgram(gl, VERT, NATURAL_FRAG);
   if (!program) return null;
 
-  const source = video || img;
-  if (!source) return null;
+  canvas.classList.add('natural-active');
+  wrap.classList.add('webgl-active');
 
   const buf = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buf);
@@ -113,27 +113,32 @@ function startNaturalRenderer(canvas, wrap, video, img, prefersReduced) {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
-  const isVideo = source.tagName === 'VIDEO';
-  let texReady = false;
-
-  function upload() {
-    if (isVideo && source.readyState < 2) return false;
-    if (!isVideo && !source.complete) return false;
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    try {
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
-      texReady = true;
-      return true;
-    } catch (_) {
-      return false;
-    }
-  }
+  // Placeholder 1x1 so first frame always draws
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([20, 80, 120, 255]));
 
   let running = true;
   let animId;
   const start = performance.now();
   let width = 0;
   let height = 0;
+
+  function activeSource() {
+    if (video && video.readyState >= 2) return video;
+    if (img && img.complete && img.naturalWidth > 0) return img;
+    return null;
+  }
+
+  function uploadFrame() {
+    const source = activeSource();
+    if (!source) return false;
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    try {
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 
   function resize() {
     const rect = wrap.getBoundingClientRect();
@@ -153,18 +158,10 @@ function startNaturalRenderer(canvas, wrap, video, img, prefersReduced) {
     if (!running) return;
     animId = requestAnimationFrame(draw);
 
-    if (!texReady) upload();
-    if (!texReady) return;
+    uploadFrame();
 
-    if (isVideo && source.readyState >= 2) {
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      try {
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
-      } catch (_) {
-        return;
-      }
-    }
-
+    gl.clearColor(0.05, 0.2, 0.35, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
     gl.useProgram(program);
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.enableVertexAttribArray(aPos);
@@ -174,11 +171,14 @@ function startNaturalRenderer(canvas, wrap, video, img, prefersReduced) {
     gl.uniform1i(uTex, 0);
     gl.uniform1f(uTime, prefersReduced ? 0 : (now - start) * 0.001);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
 
-    if (!canvas.classList.contains('natural-active')) {
-      canvas.classList.add('natural-active');
-      wrap.classList.add('webgl-active');
-    }
+  if (img && !img.complete) {
+    img.addEventListener('load', () => uploadFrame(), { once: true });
+  }
+  if (video) {
+    video.addEventListener('loadeddata', () => uploadFrame());
+    video.addEventListener('canplay', () => uploadFrame());
   }
 
   resize();
@@ -205,8 +205,9 @@ export function initLiveBeach(wrap) {
   const canvas = wrap.querySelector('#beachWater');
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  if (!canvas) return null;
+
   if (prefersReduced) {
-    img?.classList.remove('hidden');
     return setupDirectVideo(wrap, null, img);
   }
 
@@ -218,42 +219,39 @@ export function initLiveBeach(wrap) {
     video.setAttribute('webkit-playsinline', '');
     video.preload = 'auto';
     video.load();
-    video.play().catch(() => {});
   }
 
-  const renderer = canvas ? startNaturalRenderer(canvas, wrap, video, img, prefersReduced) : null;
-
+  const renderer = startNaturalRenderer(canvas, wrap, video, img, prefersReduced);
   if (!renderer) {
     return setupDirectVideo(wrap, video, img);
   }
 
   const tryPlay = () => video?.play().catch(() => {});
 
-  const observer = new IntersectionObserver(
-    ([entry]) => {
-      if (!video) return;
-      if (entry.isIntersecting) tryPlay();
-      else video.pause();
-    },
-    { threshold: 0.05 }
-  );
-  observer.observe(wrap);
-
   window.addEventListener('hero:ready', () => {
     renderer.resize();
     tryPlay();
   }, { once: true });
 
-  requestAnimationFrame(() => {
-    renderer.resize();
+  if (video) {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) tryPlay();
+        else video.pause();
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(wrap);
     tryPlay();
-  });
 
-  return {
-    destroy() {
-      renderer.destroy();
-      observer.disconnect();
-      video?.pause();
-    },
-  };
+    return {
+      destroy() {
+        renderer.destroy();
+        observer.disconnect();
+        video.pause();
+      },
+    };
+  }
+
+  return { destroy: () => renderer.destroy() };
 }
