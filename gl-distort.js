@@ -19,13 +19,12 @@ const FRAG = `
     vec2 uv = vUv;
     vec2 m = uMouse * 0.5 + 0.5;
     float dist = distance(uv, m);
-    float wave = sin(dist * 12.0 - uTime * 1.5) * 0.012 * uStrength;
-    wave += sin(uv.x * 20.0 + uTime) * 0.004 * uStrength;
-    wave += sin(uv.y * 15.0 - uTime * 0.8) * 0.003 * uStrength;
-    vec2 offset = vec2(wave, wave * 0.6);
+    float wave = sin(dist * 10.0 - uTime * 1.2) * 0.008 * uStrength;
+    wave += sin(uv.x * 16.0 + uTime * 0.8) * 0.003 * uStrength;
+    vec2 offset = vec2(wave, wave * 0.5);
     vec3 col = texture2D(uTex, uv + offset).rgb;
-    float shine = pow(max(0.0, 1.0 - dist * 1.5), 3.0) * 0.08 * uStrength;
-    col += vec3(1.0, 0.9, 0.7) * shine;
+    float shine = pow(max(0.0, 1.0 - dist * 1.8), 3.0) * 0.06 * uStrength;
+    col += vec3(1.0, 0.92, 0.75) * shine;
     gl_FragColor = vec4(col, 1.0);
   }
 `;
@@ -85,7 +84,7 @@ function createDistortScene(wrap) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
     texReady = true;
-    img.style.opacity = '0';
+    img.classList.add('gl-hidden');
   };
   if (img.complete) upload();
   else img.addEventListener('load', upload);
@@ -114,9 +113,6 @@ function createDistortScene(wrap) {
 
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
     gl.useProgram(program);
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.enableVertexAttribArray(aPos);
@@ -154,33 +150,16 @@ function createDistortScene(wrap) {
       cancelAnimationFrame(animId);
       observer.disconnect();
       window.removeEventListener('resize', resize);
-      img.style.opacity = '';
+      img.classList.remove('gl-hidden');
     },
   };
 }
 
 export function initGlDistort() {
-  const selectors = [
-    '[data-gl-distort]',
-    '.gallery-slide',
-    '.about-images figure',
-    '.trust-item',
-    '.marquee-wrap',
-  ];
-  const seen = new Set();
   const scenes = [];
-
-  selectors.forEach((sel) => {
-    document.querySelectorAll(sel).forEach((el) => {
-      const img = el.querySelector('img');
-      if (seen.has(el) || !img) return;
-      seen.add(el);
-      if (!el.dataset.glDistort) el.dataset.glDistort = 'true';
-      if (!el.dataset.glStrength) el.dataset.glStrength = el.classList.contains('gallery-slide') ? '0.7' : '0.9';
-      const s = createDistortScene(el);
-      if (s) scenes.push(s);
-    });
+  document.querySelectorAll('[data-gl-distort]').forEach((el) => {
+    const s = createDistortScene(el);
+    if (s) scenes.push(s);
   });
-
   return { destroy: () => scenes.forEach((s) => s.destroy()) };
 }

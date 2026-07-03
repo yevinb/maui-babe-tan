@@ -7,33 +7,86 @@
   const menuBtn = document.getElementById('menuBtn');
   const menuOverlay = document.getElementById('menuOverlay');
   const heroBg = document.getElementById('heroBg');
-  const interludeBg = document.getElementById('interludeBg');
   const hero = document.getElementById('home');
 
   let lastScroll = 0;
   let ticking = false;
 
-  /* ── Loader ── */
-  let progress = 0;
-  const tickLoader = setInterval(() => {
-    progress += Math.random() * 18 + 8;
-    if (progress >= 100) {
-      progress = 100;
-      clearInterval(tickLoader);
-      window.setLoaderProgress?.(100);
-      setTimeout(finishLoader, 800);
-    }
-    if (loaderPct) loaderPct.textContent = Math.floor(progress) + '%';
-    window.setLoaderProgress?.(progress);
-  }, 120);
+  /* ── Real asset loader ── */
+  const CRITICAL_ASSETS = [
+    'assets/hero-beach.jpg',
+    'assets/hero-beach.mp4',
+    'assets/brand-avatar.jpg',
+    'assets/product-pool.jpg',
+    'assets/gallery-poolside.jpg',
+  ];
+
+  function preloadImage(src) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve();
+      img.onerror = () => resolve();
+      img.src = src;
+    });
+  }
+
+  function preloadVideo(src) {
+    return new Promise((resolve) => {
+      const video = document.createElement('video');
+      video.preload = 'auto';
+      video.muted = true;
+      const done = () => resolve();
+      video.addEventListener('canplaythrough', done, { once: true });
+      video.addEventListener('loadeddata', done, { once: true });
+      video.addEventListener('error', done, { once: true });
+      video.src = src;
+      video.load();
+      setTimeout(done, 4000);
+    });
+  }
+
+  function updateLoaderProgress(pct) {
+    const rounded = Math.min(100, Math.floor(pct));
+    if (loaderPct) loaderPct.textContent = rounded + '%';
+    window.setLoaderProgress?.(rounded);
+  }
+
+  const loadStart = performance.now();
+  const MIN_LOADER_MS = 1800;
+  let loaded = 0;
+  const total = CRITICAL_ASSETS.length + 1;
+
+  CRITICAL_ASSETS.forEach((src) => {
+    const load = src.endsWith('.mp4') ? preloadVideo(src) : preloadImage(src);
+    load.then(() => {
+      loaded++;
+      updateLoaderProgress((loaded / total) * 100);
+      if (loaded >= total) maybeFinishLoader();
+    });
+  });
+
+  document.fonts.ready.then(() => {
+    loaded++;
+    updateLoaderProgress((loaded / total) * 100);
+    if (loaded >= total) maybeFinishLoader();
+  });
+
+  function maybeFinishLoader() {
+    const elapsed = performance.now() - loadStart;
+    const wait = Math.max(0, MIN_LOADER_MS - elapsed);
+    setTimeout(() => {
+      updateLoaderProgress(100);
+      setTimeout(finishLoader, 600);
+    }, wait);
+  }
 
   function finishLoader() {
     loader?.classList.add('done');
     document.body.style.overflow = '';
-    setTimeout(() => loader?.remove(), 1400);
+    setTimeout(() => loader?.remove(), 1200);
     document.querySelectorAll('.reveal').forEach((el, i) => {
       if (el.closest('.hero')) {
-        setTimeout(() => el.classList.add('visible'), 200 + i * 100);
+        setTimeout(() => el.classList.add('visible'), 150 + i * 80);
       }
     });
   }
@@ -49,7 +102,31 @@
     header?.classList.toggle('hero-pass', y < heroBottom);
     header?.classList.toggle('hide', y > lastScroll && y > 200);
     lastScroll = y;
+    updateActiveNav();
     ticking = false;
+  }
+
+  /* ── Scroll spy nav ── */
+  const navLinks = document.querySelectorAll('.nav a[href^="#"]');
+  const navSections = [...navLinks]
+    .map((link) => {
+      const id = link.getAttribute('href')?.slice(1);
+      const el = id ? document.getElementById(id) : null;
+      return el ? { id, el } : null;
+    })
+    .filter(Boolean);
+
+  function updateActiveNav() {
+    if (!navSections.length) return;
+    const offset = 140;
+    let current = navSections[0].id;
+    navSections.forEach(({ id, el }) => {
+      if (el.offsetTop - offset <= window.scrollY) current = id;
+    });
+    navLinks.forEach((link) => {
+      const id = link.getAttribute('href')?.slice(1);
+      link.classList.toggle('active', id === current);
+    });
   }
 
   window.addEventListener('scroll', () => {
@@ -64,10 +141,9 @@
 
   updateHeader();
 
-  /* ── Parallax ── */
   function parallax() {
     const y = window.scrollY;
-    if (heroBg) heroBg.style.transform = `translate3d(0, ${y * 0.28}px, 0)`;
+    if (heroBg) heroBg.style.transform = `translate3d(0, ${y * 0.22}px, 0)`;
   }
 
   /* ── Mobile menu ── */
@@ -96,11 +172,33 @@
         }
       });
     },
-    { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+    { threshold: 0.1, rootMargin: '0px 0px -30px 0px' }
   );
   reveals.forEach((el) => observer.observe(el));
 
-  /* Product tilt handled by WebGL (product-gl.js) */
+  /* ── Product 3D tilt ── */
+  if (window.matchMedia('(hover: hover)').matches) {
+    document.querySelectorAll('[data-tilt]').forEach((card) => {
+      const shine = document.createElement('div');
+      shine.className = 'tilt-shine';
+      card.appendChild(shine);
+
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.transform = `perspective(1000px) rotateY(${x * 10}deg) rotateX(${-y * 10}deg) translateZ(6px)`;
+        shine.style.background = `radial-gradient(circle at ${(x + 0.5) * 100}% ${(y + 0.5) * 100}%, rgba(255,255,255,0.2) 0%, transparent 55%)`;
+        shine.style.opacity = '1';
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+        shine.style.opacity = '0';
+      });
+    });
+  }
+
+  /* ── Gallery drag scroll ── */
   const galleryTrack = document.getElementById('galleryTrack');
   if (galleryTrack) {
     let isDown = false;

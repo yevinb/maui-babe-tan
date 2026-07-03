@@ -18,13 +18,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Pinyon+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=12">
+  <link rel="preload" href="assets/hero-beach.jpg" as="image">
+  <link rel="preload" href="assets/hero-beach.mp4" as="video" type="video/mp4">
+  <link rel="stylesheet" href="styles.css?v=14">
 </head>
 <body>
 
+  <a href="#home" class="skip-link">Skip to content</a>
   <div class="grain" aria-hidden="true"></div>
-  <canvas id="ambientCanvas" class="ambient-canvas" aria-hidden="true"></canvas>
-  <canvas id="glScreen" class="gl-screen-canvas" aria-hidden="true"></canvas>
 
   <div class="loader" id="loader">
     <div class="loader-ocean" aria-hidden="true">
@@ -51,8 +52,8 @@
         <a href="#products">Shop</a>
         <a href="#about">Story</a>
         <a href="#gallery">Gallery</a>
+        <a href="#instagram">Instagram</a>
         <a href="#reviews">Reviews</a>
-        <a href="https://instagram.com/mauibabe965" target="_blank" rel="noopener">Instagram</a>
       </nav>
       <div class="header-actions">
         <a href="https://wa.me/96555232772?text=Hello%2C%20I%20would%20like%20to%20place%20an%20order." class="btn btn-wa" target="_blank" rel="noopener">
@@ -75,6 +76,7 @@
       <a href="#products" class="menu-link">Shop</a>
       <a href="#about" class="menu-link">Story</a>
       <a href="#gallery" class="menu-link">Gallery</a>
+      <a href="#instagram" class="menu-link">Instagram</a>
       <a href="#reviews" class="menu-link">Reviews</a>
       <a href="#delivery" class="menu-link">Delivery</a>
       <a href="https://wa.me/96555232772" class="menu-link accent" target="_blank" rel="noopener">WhatsApp</a>
@@ -101,12 +103,9 @@
             aria-hidden="true"
           >
             <source src="assets/hero-beach.mp4" type="video/mp4">
-            <source src="https://videos.pexels.com/video-files/28962838/28962838-hd_1920_1080_25fps.mp4" type="video/mp4">
           </video>
           <img src="assets/hero-beach.jpg" alt="" class="hero-bg-img" width="1920" height="1080" fetchpriority="high">
           <canvas id="beachWater" class="hero-water-canvas" aria-hidden="true"></canvas>
-          <div class="hero-sun-rays" aria-hidden="true"></div>
-          <div class="hero-heat-haze" aria-hidden="true"></div>
         </div>
       </div>
       <div class="hero-vignette"></div>
@@ -117,7 +116,7 @@
             <span class="line">Not your</span>
             <span class="line accent">average suntan</span>
           </h1>
-          <p class="hero-sub reveal" data-delay="2">Genuine Hawaiian browning lotion and after-sun care — delivered across Kuwait. Order on WhatsApp.</p>
+          <p class="hero-sub reveal" data-delay="2">Authentic Hawaiian browning lotion — sourced, stored, and delivered across Kuwait. Order directly on WhatsApp.</p>
           <div class="hero-btns reveal" data-delay="3">
             <a href="https://wa.me/96555232772?text=Hello%2C%20I%20would%20like%20to%20place%20an%20order." class="btn btn-gold" target="_blank" rel="noopener">Order Now</a>
             <a href="#products" class="btn btn-line light">Explore Collection</a>
@@ -127,12 +126,6 @@
           <div class="hero-3d-stage" id="hero3d">
             <canvas id="bottleCanvas" aria-label="Interactive 3D Maui Babe bottle"></canvas>
             <div class="hero-3d-glow" aria-hidden="true"></div>
-            <div class="hero-3d-orbs" aria-hidden="true">
-              <span class="orb orb-1"></span>
-              <span class="orb orb-2"></span>
-              <span class="orb orb-3"></span>
-            </div>
-            <div class="hero-3d-ring" aria-hidden="true"></div>
           </div>
           <div class="hero-showcase-info">
             <span class="label">Bestseller</span>
@@ -148,25 +141,18 @@
       </div>
     </section>
 
-    <!-- MARQUEE -->
-    <div class="marquee-wrap" aria-hidden="true" data-scroll-3d>
-      <div class="marquee">
-        <div class="marquee-content">
-          <span>Sunkissed and blissed</span><i>◆</i>
-          <span>Maui Babe Glow Standard</span><i>◆</i>
-          <span>Not your average suntan</span><i>◆</i>
-          <span>Delivered across Kuwait</span><i>◆</i>
-          <span>Sunkissed and blissed</span><i>◆</i>
-          <span>Maui Babe Glow Standard</span><i>◆</i>
-          <span>Not your average suntan</span><i>◆</i>
-          <span>Delivered across Kuwait</span><i>◆</i>
-        </div>
+    <!-- EDITORIAL -->
+    <section class="editorial-quote" aria-label="Brand quote">
+      <div class="container editorial-inner reveal">
+        <div class="editorial-rule" aria-hidden="true"></div>
+        <blockquote>Sunkissed and blissed</blockquote>
+        <p class="editorial-sub">The Maui Babe Glow Standard · Kuwait</p>
       </div>
-    </div>
+    </section>
 
     <!-- TRUST -->
-    <section class="trust" data-scroll-3d>
-      <div class="container trust-grid scroll-3d-inner">
+    <section class="trust">
+      <div class="container trust-grid">
         <div class="trust-item reveal">
           <strong>100%</strong>
           <span>Authentic products</span>
@@ -179,16 +165,16 @@
           <strong>WhatsApp</strong>
           <span>Personal ordering</span>
         </div>
-        <div class="trust-item reveal" data-delay="3">
+        <a href="https://instagram.com/mauibabe965" class="trust-item trust-link reveal" data-delay="3" target="_blank" rel="noopener">
           <strong>@mauibabe965</strong>
           <span>Follow on Instagram</span>
-        </div>
+        </a>
       </div>
     </section>
 
     <!-- FEATURED -->
-    <section class="featured" data-scroll-3d>
-      <div class="featured-media reveal" data-gl-distort data-gl-strength="1.2">
+    <section class="featured">
+      <div class="featured-media reveal" data-gl-distort data-gl-strength="0.9">
         <img src="assets/gallery-poolside.jpg" alt="Poolside lifestyle" width="1200" height="900" loading="lazy">
         <div class="featured-badge">
           <svg class="bottle-icon" viewBox="0 0 80 160" aria-hidden="true">
@@ -210,7 +196,7 @@
     </section>
 
     <!-- PRODUCTS -->
-    <section class="products" id="products" data-scroll-3d>
+    <section class="products" id="products">
       <div class="container">
         <div class="section-head reveal">
           <span class="label">Collection</span>
@@ -219,8 +205,8 @@
         </div>
       </div>
       <div class="product-showcase">
-        <article class="product reveal">
-          <div class="product-visual" data-gl-card>
+        <article class="product reveal" data-tilt>
+          <div class="product-visual">
             <img src="assets/product-pool.jpg" alt="Browning Lotion" width="800" height="1000" loading="lazy">
             <div class="product-overlay">
               <span class="product-num">01</span>
@@ -236,8 +222,8 @@
             <p>The original Hawaiian formula. Apply in sunlight to deepen and accelerate your natural tan.</p>
           </div>
         </article>
-        <article class="product reveal" data-delay="1">
-          <div class="product-visual" data-gl-card>
+        <article class="product reveal" data-delay="1" data-tilt>
+          <div class="product-visual">
             <img src="assets/product-sun.jpg" alt="After Browning Lotion" width="800" height="1000" loading="lazy">
             <div class="product-overlay">
               <span class="product-num">02</span>
@@ -253,8 +239,8 @@
             <p>Hydrates and locks in your tan. The essential companion to your browning routine.</p>
           </div>
         </article>
-        <article class="product reveal" data-delay="2">
-          <div class="product-visual" data-gl-card>
+        <article class="product reveal" data-delay="2" data-tilt>
+          <div class="product-visual">
             <img src="assets/product-set.jpg" alt="Complete Tan Set" width="800" height="1000" loading="lazy">
             <div class="product-overlay">
               <span class="product-num">03</span>
@@ -274,15 +260,14 @@
     </section>
 
     <!-- INTERLUDE -->
-    <section class="interlude" aria-hidden="true" data-scroll-3d>
-      <div class="interlude-bg scroll-3d-inner" id="interludeBg" data-gl-distort data-gl-strength="0.8">
+    <section class="interlude">
+      <div class="interlude-bg" id="interludeBg">
         <img src="assets/about-sunset.jpg" alt="" width="1920" height="1080" loading="lazy">
       </div>
       <p class="interlude-text">Maui Babe · Glow Standard</p>
     </section>
 
-    <!-- ABOUT -->
-    <section class="about" id="about" data-scroll-3d>
+    <section class="about" id="about">
       <div class="container about-layout">
         <div class="about-sticky reveal">
           <span class="label">Our Story</span>
@@ -327,7 +312,7 @@
     </section>
 
     <!-- GALLERY -->
-    <section class="gallery" id="gallery" data-scroll-3d>
+    <section class="gallery" id="gallery">
       <div class="container">
         <div class="section-head reveal">
           <span class="label">Gallery</span>
@@ -358,8 +343,45 @@
       </div>
     </section>
 
-    <!-- REVIEWS -->
-    <section class="reviews" id="reviews" data-scroll-3d>
+    <!-- INSTAGRAM -->
+    <section class="instagram" id="instagram">
+      <div class="container">
+        <div class="section-head center reveal">
+          <span class="label">Follow</span>
+          <h2 class="display">@mauibabe965</h2>
+          <p class="lead">Daily drops, customer glow-ups, and restock alerts on Instagram.</p>
+          <a href="https://instagram.com/mauibabe965" class="btn btn-line" target="_blank" rel="noopener">Follow on Instagram</a>
+        </div>
+        <div class="instagram-grid reveal">
+          <a href="https://instagram.com/mauibabe965" class="ig-tile" target="_blank" rel="noopener" aria-label="View on Instagram">
+            <img src="assets/product-pool.jpg" alt="Maui Babe poolside" width="400" height="400" loading="lazy">
+            <span class="ig-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </span>
+          </a>
+          <a href="https://instagram.com/mauibabe965" class="ig-tile" target="_blank" rel="noopener" aria-label="View on Instagram">
+            <img src="assets/gallery-ocean.jpg" alt="Ocean lifestyle" width="400" height="400" loading="lazy">
+            <span class="ig-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </span>
+          </a>
+          <a href="https://instagram.com/mauibabe965" class="ig-tile" target="_blank" rel="noopener" aria-label="View on Instagram">
+            <img src="assets/product-sun.jpg" alt="Golden hour" width="400" height="400" loading="lazy">
+            <span class="ig-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </span>
+          </a>
+          <a href="https://instagram.com/mauibabe965" class="ig-tile" target="_blank" rel="noopener" aria-label="View on Instagram">
+            <img src="assets/about-pool.jpg" alt="Resort pool" width="400" height="400" loading="lazy">
+            <span class="ig-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="reviews" id="reviews">
       <div class="container">
         <div class="section-head center reveal">
           <span class="label">Reviews</span>
@@ -395,7 +417,7 @@
     </section>
 
     <!-- DELIVERY -->
-    <section class="delivery" id="delivery" data-scroll-3d>
+    <section class="delivery" id="delivery">
       <div class="container">
         <div class="delivery-layout">
           <div class="delivery-intro reveal">
@@ -426,8 +448,8 @@
     </section>
 
     <!-- CTA -->
-    <section class="cta" data-scroll-3d>
-      <div class="cta-bg scroll-3d-inner" data-gl-distort data-gl-strength="1">
+    <section class="cta">
+      <div class="cta-bg" data-gl-distort data-gl-strength="0.85">
         <img src="assets/hero-beach.jpg" alt="" width="1920" height="1080" loading="lazy">
       </div>
       <div class="cta-inner reveal">
@@ -454,6 +476,7 @@
           <a href="#products">Shop</a>
           <a href="#about">Story</a>
           <a href="#gallery">Gallery</a>
+          <a href="#instagram">Instagram</a>
           <a href="#delivery">Delivery</a>
         </div>
         <div>
@@ -475,10 +498,10 @@
   </a>
 
   <script type="module">
-    import { initLoaderWave } from './loader-wave.js?v=12';
+    import { initLoaderWave } from './loader-wave.js?v=14';
     window.setLoaderProgress = initLoaderWave();
   </script>
-  <script src="app.js?v=12"></script>
-  <script type="module" src="scene-3d.js?v=12"></script>
+  <script src="app.js?v=14"></script>
+  <script type="module" src="scene-3d.js?v=14"></script>
 </body>
 </html>
