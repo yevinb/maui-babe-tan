@@ -208,7 +208,7 @@ button { font: inherit; cursor: pointer; border: none; background: none; color: 
   z-index: 10000;
   pointer-events: all;
   overflow: hidden;
-  background: #041e35;
+  background: #0a0a0a;
 }
 .loader.done {
   pointer-events: none;
@@ -226,19 +226,9 @@ button { font: inherit; cursor: pointer; border: none; background: none; color: 
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(1.3) contrast(1.06) brightness(1.04) hue-rotate(-4deg);
 }
 .loader-ocean::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background:
-    linear-gradient(180deg, rgba(4, 30, 53, 0.25) 0%, transparent 35%),
-    linear-gradient(180deg, transparent 30%, rgba(8, 90, 130, 0.35) 55%, rgba(12, 130, 165, 0.25) 100%),
-    radial-gradient(ellipse at 50% 70%, rgba(30, 160, 200, 0.2) 0%, transparent 60%);
-  mix-blend-mode: soft-light;
+  display: none;
 }
 .loader-wave-canvas {
   position: absolute;
@@ -247,7 +237,6 @@ button { font: inherit; cursor: pointer; border: none; background: none; color: 
   height: 100%;
   z-index: 2;
   pointer-events: none;
-  mix-blend-mode: soft-light;
 }
 .loader-ocean-vignette {
   position: absolute;
@@ -517,26 +506,34 @@ button { font: inherit; cursor: pointer; border: none; background: none; color: 
 .hero-bg-video,
 .hero-bg-img {
   position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  animation: liveBeachDrift 32s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.hero-bg-layers.webgl-active .hero-bg-video,
+.hero-bg-layers.webgl-active .hero-bg-img {
   opacity: 0;
   pointer-events: none;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  z-index: -10;
+}
+.hero-bg-layers.video-fallback .hero-bg-video {
+  opacity: 1;
 }
 .hero-water-canvas {
+  display: none;
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   z-index: 1;
   pointer-events: none;
-  display: block;
-  opacity: 1;
-  background: linear-gradient(180deg, #5eb8e8 0%, #0d6e9e 40%, #044d78 100%);
 }
-.hero-water-canvas.ocean-active {
-  animation: liveBeachDrift 36s ease-in-out infinite alternate;
+.hero-water-canvas.natural-active {
+  display: block;
+  animation: liveBeachDrift 32s ease-in-out infinite alternate;
   will-change: transform;
 }
 .hero-bg-layers::after {
@@ -563,42 +560,14 @@ button { font: inherit; cursor: pointer; border: none; background: none; color: 
   50% { opacity: 1; transform: scale(1.15); }
 }
 .hero-heat-haze {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 42%;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgba(255,200,120,0.04) 30%,
-    rgba(255,180,100,0.08) 60%,
-    rgba(255,160,80,0.06) 100%
-  );
-  mix-blend-mode: overlay;
-  animation: heatShimmer 5s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 2;
+  display: none;
 }
 @keyframes heatShimmer {
   0%, 100% { opacity: 0.5; transform: translateY(0); }
   50% { opacity: 0.9; transform: translateY(-4px); }
 }
 .hero-bg-layers::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    105deg,
-    transparent 30%,
-    rgba(255,255,255,0.04) 48%,
-    rgba(255,255,255,0.07) 52%,
-    transparent 70%
-  );
-  background-size: 250% 100%;
-  animation: cloudDrift 18s linear infinite;
-  z-index: 1;
-  pointer-events: none;
+  display: none;
 }
 @keyframes cloudDrift {
   0% { background-position: 100% 0; }
