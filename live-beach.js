@@ -15,14 +15,12 @@ const NATURAL_FRAG = `
 
   void main() {
     vec2 uv = vUv;
-    float water = smoothstep(0.12, 0.28, uv.y) * (1.0 - smoothstep(0.48, 0.66, uv.y));
+    float water = smoothstep(0.10, 0.26, uv.y) * (1.0 - smoothstep(0.46, 0.64, uv.y));
     float t = uTime;
-
     vec2 ripple = vec2(
-      sin(uv.x * 22.0 + t * 0.9) * 0.0025,
-      cos(uv.x * 16.0 - t * 0.65) * 0.0018
+      sin(uv.x * 24.0 + t * 1.0) * 0.003,
+      cos(uv.x * 17.0 - t * 0.7) * 0.002
     ) * water;
-
     vec3 col = texture2D(uTex, clamp(uv + ripple, 0.002, 0.998)).rgb;
     float luma = dot(col, vec3(0.299, 0.587, 0.114));
     col = mix(vec3(luma), col, 1.06);
@@ -34,11 +32,7 @@ function compileShader(gl, type, src) {
   const s = gl.createShader(type);
   gl.shaderSource(s, src);
   gl.compileShader(s);
-  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
-    console.warn('[ocean] shader:', gl.getShaderInfoLog(s));
-    return null;
-  }
-  return s;
+  return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null;
 }
 
 function linkProgram(gl, vs, fs) {
@@ -49,53 +43,52 @@ function linkProgram(gl, vs, fs) {
   gl.attachShader(p, v);
   gl.attachShader(p, f);
   gl.linkProgram(p);
-  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) return null;
-  return p;
+  return gl.getProgramParameter(p, gl.LINK_STATUS) ? p : null;
 }
 
-function setupDirectVideo(wrap, video, img) {
-  wrap.classList.add('video-fallback');
-  wrap.classList.remove('webgl-active');
-  const canvas = wrap.querySelector('#beachWater');
-  canvas?.classList.remove('natural-active');
+function startVideo(wrap, video) {
+  if (!video) return () => {};
 
-  if (video) {
-    video.muted = true;
-    video.playsInline = true;
-    video.loop = true;
-    video.setAttribute('playsinline', '');
-    const play = () => video.play().catch(() => {});
-    video.addEventListener('canplay', play, { once: true });
-    if (video.readyState >= 2) play();
-    else video.load();
-  } else if (img) {
-    img.style.opacity = '1';
-  }
+  video.muted = true;
+  video.defaultMuted = true;
+  video.playsInline = true;
+  video.loop = true;
+  video.autoplay = true;
+  video.setAttribute('playsinline', '');
+  video.setAttribute('webkit-playsinline', '');
+
+  const play = () => video.play().catch(() => {});
+
+  play();
+  video.addEventListener('loadeddata', play);
+  video.addEventListener('canplay', play);
+
+  window.addEventListener('hero:ready', play, { once: true });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) play();
+  });
 
   const observer = new IntersectionObserver(
-    ([entry]) => {
-      if (!video) return;
-      if (entry.isIntersecting) video.play().catch(() => {});
-      else video.pause();
-    },
-    { threshold: 0.05 }
+    ([entry]) => { if (entry.isIntersecting) play(); },
+    { threshold: 0.01 }
   );
   observer.observe(wrap);
 
-  return { destroy() { observer.disconnect(); video?.pause(); } };
+  return () => {
+    observer.disconnect();
+    video.removeEventListener('loadeddata', play);
+    video.removeEventListener('canplay', play);
+  };
 }
 
-function startNaturalRenderer(canvas, wrap, video, img, prefersReduced) {
+function startNaturalRenderer(canvas, wrap, video, prefersReduced) {
   const gl =
     canvas.getContext('webgl', { alpha: false, antialias: true, powerPreference: 'high-performance' }) ||
     canvas.getContext('experimental-webgl');
-  if (!gl) return null;
+  if (!gl || !video) return null;
 
   const program = linkProgram(gl, VERT, NATURAL_FRAG);
   if (!program) return null;
-
-  canvas.classList.add('natural-active');
-  wrap.classList.add('webgl-active');
 
   const buf = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buf);
@@ -113,32 +106,14 @@ function startNaturalRenderer(canvas, wrap, video, img, prefersReduced) {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
-  // Placeholder 1x1 so first frame always draws
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([20, 80, 120, 255]));
-
   let running = true;
   let animId;
   const start = performance.now();
   let width = 0;
   let height = 0;
-
-  function activeSource() {
-    if (video && video.readyState >= 2) return video;
-    if (img && img.complete && img.naturalWidth > 0) return img;
-    return null;
-  }
-
-  function uploadFrame() {
-    const source = activeSource();
-    if (!source) return false;
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    try {
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
+  let glLive = false;
+  let lastVideoTime = -1;
+  let movingFrames = 0;
 
   function resize() {
     const rect = wrap.getBoundingClientRect();
@@ -154,13 +129,39 @@ function startNaturalRenderer(canvas, wrap, video, img, prefersReduced) {
     gl.viewport(0, 0, canvas.width, canvas.height);
   }
 
+  function uploadVideoFrame() {
+    if (video.readyState < 2) return false;
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    try {
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   function draw(now) {
     if (!running) return;
     animId = requestAnimationFrame(draw);
 
-    uploadFrame();
+    if (video.paused) video.play().catch(() => {});
 
-    gl.clearColor(0.05, 0.2, 0.35, 1.0);
+    const uploaded = uploadVideoFrame();
+    if (!uploaded) return;
+
+    const t = video.currentTime;
+    if (t !== lastVideoTime) {
+      movingFrames++;
+      lastVideoTime = t;
+    }
+
+    if (!glLive && movingFrames >= 3) {
+      glLive = true;
+      canvas.classList.add('natural-active');
+      wrap.classList.add('webgl-active');
+    }
+
+    gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.useProgram(program);
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
@@ -171,14 +172,6 @@ function startNaturalRenderer(canvas, wrap, video, img, prefersReduced) {
     gl.uniform1i(uTex, 0);
     gl.uniform1f(uTime, prefersReduced ? 0 : (now - start) * 0.001);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-  }
-
-  if (img && !img.complete) {
-    img.addEventListener('load', () => uploadFrame(), { once: true });
-  }
-  if (video) {
-    video.addEventListener('loadeddata', () => uploadFrame());
-    video.addEventListener('canplay', () => uploadFrame());
   }
 
   resize();
@@ -205,53 +198,28 @@ export function initLiveBeach(wrap) {
   const canvas = wrap.querySelector('#beachWater');
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (!canvas) return null;
+  if (img) img.style.display = 'none';
 
-  if (prefersReduced) {
-    return setupDirectVideo(wrap, null, img);
+  if (!video) return null;
+
+  wrap.classList.add('video-live');
+  const stopVideoHelpers = startVideo(wrap, video);
+
+  if (prefersReduced || !canvas) {
+    return { destroy: stopVideoHelpers };
   }
 
-  if (video) {
-    video.muted = true;
-    video.playsInline = true;
-    video.loop = true;
-    video.setAttribute('playsinline', '');
-    video.setAttribute('webkit-playsinline', '');
-    video.preload = 'auto';
-    video.load();
-  }
-
-  const renderer = startNaturalRenderer(canvas, wrap, video, img, prefersReduced);
-  if (!renderer) {
-    return setupDirectVideo(wrap, video, img);
-  }
-
-  const tryPlay = () => video?.play().catch(() => {});
+  const renderer = startNaturalRenderer(canvas, wrap, video, prefersReduced);
 
   window.addEventListener('hero:ready', () => {
-    renderer.resize();
-    tryPlay();
+    renderer?.resize();
+    video.play().catch(() => {});
   }, { once: true });
 
-  if (video) {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) tryPlay();
-        else video.pause();
-      },
-      { threshold: 0.05 }
-    );
-    observer.observe(wrap);
-    tryPlay();
-
-    return {
-      destroy() {
-        renderer.destroy();
-        observer.disconnect();
-        video.pause();
-      },
-    };
-  }
-
-  return { destroy: () => renderer.destroy() };
+  return {
+    destroy() {
+      stopVideoHelpers();
+      renderer?.destroy();
+    },
+  };
 }
