@@ -3,6 +3,7 @@
 
   const loader = document.getElementById('loader');
   const loaderPct = document.getElementById('loaderPct');
+  const loaderBar = document.getElementById('loaderBar');
   const header = document.getElementById('header');
   const menuBtn = document.getElementById('menuBtn');
   const menuOverlay = document.getElementById('menuOverlay');
@@ -48,6 +49,7 @@
   function updateLoaderProgress(pct) {
     const rounded = Math.min(100, Math.floor(pct));
     if (loaderPct) loaderPct.textContent = rounded + '%';
+    if (loaderBar) loaderBar.style.width = rounded + '%';
     window.setLoaderProgress?.(rounded);
   }
 
@@ -198,7 +200,7 @@
     });
   }
 
-  /* ── Gallery drag scroll ── */
+  /* ── Gallery drag + touch scroll ── */
   const galleryTrack = document.getElementById('galleryTrack');
   if (galleryTrack) {
     let isDown = false;
@@ -225,6 +227,17 @@
       const x = e.pageX - galleryTrack.offsetLeft;
       galleryTrack.scrollLeft = scrollLeft - (x - startX) * 1.5;
     });
+
+    let touchStartX = 0;
+    let touchScrollLeft = 0;
+    galleryTrack.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].pageX;
+      touchScrollLeft = galleryTrack.scrollLeft;
+    }, { passive: true });
+    galleryTrack.addEventListener('touchmove', (e) => {
+      const x = e.touches[0].pageX;
+      galleryTrack.scrollLeft = touchScrollLeft - (x - touchStartX) * 1.2;
+    }, { passive: true });
   }
 
   /* ── Smooth anchor scroll ── */

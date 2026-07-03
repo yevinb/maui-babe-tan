@@ -18,7 +18,7 @@ export function initBottleScene(canvas) {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.15;
+  renderer.toneMappingExposure = 1.28;
 
   const bottle = new THREE.Group();
 
@@ -98,7 +98,7 @@ export function initBottleScene(canvas) {
   fill.position.set(-4, 2, 2);
   scene.add(fill);
 
-  const rim = new THREE.PointLight(0xe8b84a, 1.2, 12);
+  const rim = new THREE.PointLight(0xe8b84a, 1.5, 14);
   rim.position.set(0, 2, -3);
   scene.add(rim);
 

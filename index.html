@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Pinyon+Script&display=swap" rel="stylesheet">
   <link rel="preload" href="assets/hero-beach.jpg" as="image">
   <link rel="preload" href="assets/hero-beach.mp4" as="video" type="video/mp4">
-  <link rel="stylesheet" href="styles.css?v=14">
+  <link rel="stylesheet" href="styles.css?v=15">
 </head>
 <body>
 
@@ -38,6 +38,8 @@
     <div class="loader-center">
       <img src="assets/brand-avatar.jpg" alt="" class="loader-avatar" width="80" height="80">
       <span class="loader-brand">Maui Babe</span>
+      <span class="loader-tag">Kuwait City · Authentic Stock</span>
+      <div class="loader-bar" aria-hidden="true"><div class="loader-bar-fill" id="loaderBar"></div></div>
       <span class="loader-pct" id="loaderPct">0%</span>
     </div>
   </div>
@@ -109,9 +111,15 @@
         </div>
       </div>
       <div class="hero-vignette"></div>
+      <div class="hero-gold-wash" aria-hidden="true"></div>
       <div class="hero-inner">
         <div class="hero-copy">
           <p class="label reveal">Kuwait · Authentic Maui Babe</p>
+          <div class="hero-pills reveal" data-delay="1">
+            <span>Kuwait City</span>
+            <span>100% Authentic</span>
+            <span>WhatsApp Orders</span>
+          </div>
           <h1 class="hero-title reveal" data-delay="1">
             <span class="line">Not your</span>
             <span class="line accent">average suntan</span>
@@ -123,14 +131,17 @@
           </div>
         </div>
         <div class="hero-showcase reveal" data-delay="4">
-          <div class="hero-3d-stage" id="hero3d">
-            <canvas id="bottleCanvas" aria-label="Interactive 3D Maui Babe bottle"></canvas>
-            <div class="hero-3d-glow" aria-hidden="true"></div>
+          <div class="hero-3d-frame">
+            <div class="hero-3d-stage" id="hero3d">
+              <canvas id="bottleCanvas" aria-label="Interactive 3D Maui Babe bottle"></canvas>
+              <div class="hero-3d-glow" aria-hidden="true"></div>
+            </div>
           </div>
           <div class="hero-showcase-info">
             <span class="label">Bestseller</span>
             <h3>Browning Lotion</h3>
-            <p>The original Hawaiian formula</p>
+            <p>The original Hawaiian formula — deep golden tan, faster than ordinary sun care.</p>
+            <div class="hero-showcase-price">Price on request</div>
             <a href="https://wa.me/96555232772?text=Hello%2C%20I%20would%20like%20to%20order%20Browning%20Lotion." class="btn btn-line light" target="_blank" rel="noopener">Order →</a>
           </div>
         </div>
@@ -149,6 +160,10 @@
         <p class="editorial-sub">The Maui Babe Glow Standard · Kuwait</p>
       </div>
     </section>
+
+    <div class="wave-divider" aria-hidden="true">
+      <svg viewBox="0 0 1440 48" preserveAspectRatio="none"><path d="M0,24 C360,48 720,0 1080,24 C1260,36 1380,12 1440,24 L1440,48 L0,48 Z" fill="currentColor"/></svg>
+    </div>
 
     <!-- TRUST -->
     <section class="trust">
@@ -169,6 +184,34 @@
           <strong>@mauibabe965</strong>
           <span>Follow on Instagram</span>
         </a>
+      </div>
+    </section>
+
+    <!-- FORMULA -->
+    <section class="formula" id="formula">
+      <div class="container">
+        <div class="formula-head reveal">
+          <span class="label">The Formula</span>
+          <h2 class="display" data-clip-reveal>Why Maui Babe <em>works</em></h2>
+          <p class="lead">A Hawaiian browning system — not sunscreen, not self-tanner. Designed to deepen your natural melanin under sunlight.</p>
+        </div>
+        <div class="formula-grid">
+          <article class="formula-card reveal">
+            <span class="formula-num">01</span>
+            <h3>Melanin acceleration</h3>
+            <p>Browning lotion stimulates melanin production in sunlight, producing a richer, deeper tan than standard products.</p>
+          </article>
+          <article class="formula-card reveal" data-delay="1">
+            <span class="formula-num">02</span>
+            <h3>Island heritage</h3>
+            <p>Formulated on Maui and trusted for decades. The same bottle customers reach for on beaches worldwide.</p>
+          </article>
+          <article class="formula-card reveal" data-delay="2">
+            <span class="formula-num">03</span>
+            <h3>Complete routine</h3>
+            <p>Pair with After Browning Lotion to hydrate, soothe, and lock in your colour for longer-lasting results.</p>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -200,12 +243,12 @@
       <div class="container">
         <div class="section-head reveal">
           <span class="label">Collection</span>
-          <h2 class="display">The Maui Babe range</h2>
+          <h2 class="display" data-clip-reveal>The Maui Babe range</h2>
           <p class="lead">Three essentials. One glow. Message us on WhatsApp for pricing and availability.</p>
         </div>
       </div>
       <div class="product-showcase">
-        <article class="product reveal" data-tilt>
+        <article class="product product--editorial reveal">
           <div class="product-visual">
             <img src="assets/product-pool.jpg" alt="Browning Lotion" width="800" height="1000" loading="lazy">
             <div class="product-overlay">
@@ -222,7 +265,7 @@
             <p>The original Hawaiian formula. Apply in sunlight to deepen and accelerate your natural tan.</p>
           </div>
         </article>
-        <article class="product reveal" data-delay="1" data-tilt>
+        <article class="product product--editorial reveal" data-delay="1">
           <div class="product-visual">
             <img src="assets/product-sun.jpg" alt="After Browning Lotion" width="800" height="1000" loading="lazy">
             <div class="product-overlay">
@@ -239,7 +282,7 @@
             <p>Hydrates and locks in your tan. The essential companion to your browning routine.</p>
           </div>
         </article>
-        <article class="product reveal" data-delay="2" data-tilt>
+        <article class="product product--editorial reveal" data-delay="2">
           <div class="product-visual">
             <img src="assets/product-set.jpg" alt="Complete Tan Set" width="800" height="1000" loading="lazy">
             <div class="product-overlay">
@@ -264,7 +307,10 @@
       <div class="interlude-bg" id="interludeBg">
         <img src="assets/about-sunset.jpg" alt="" width="1920" height="1080" loading="lazy">
       </div>
-      <p class="interlude-text">Maui Babe · Glow Standard</p>
+      <div class="interlude-text-wrap">
+        <p class="interlude-text">Maui Babe</p>
+        <p class="interlude-sub">The Glow Standard · Kuwait</p>
+      </div>
     </section>
 
     <section class="about" id="about">
@@ -316,27 +362,27 @@
       <div class="container">
         <div class="section-head reveal">
           <span class="label">Gallery</span>
-          <h2 class="display light">The lifestyle</h2>
+          <h2 class="display light" data-clip-reveal>The lifestyle</h2>
         </div>
       </div>
       <div class="gallery-track" id="galleryTrack">
-        <figure class="gallery-slide reveal">
+        <figure class="gallery-slide reveal" data-index="01">
           <img src="assets/gallery-ocean.jpg" alt="Ocean horizon" width="700" height="900" loading="lazy">
           <figcaption>Ocean</figcaption>
         </figure>
-        <figure class="gallery-slide reveal" data-delay="1">
+        <figure class="gallery-slide reveal" data-delay="1" data-index="02">
           <img src="assets/gallery-poolside.jpg" alt="Poolside" width="700" height="900" loading="lazy">
           <figcaption>Poolside</figcaption>
         </figure>
-        <figure class="gallery-slide wide reveal" data-delay="2">
+        <figure class="gallery-slide wide reveal" data-delay="2" data-index="03">
           <img src="assets/hero-beach.jpg" alt="Beach" width="1000" height="700" loading="lazy">
           <figcaption>Beach</figcaption>
         </figure>
-        <figure class="gallery-slide reveal" data-delay="3">
+        <figure class="gallery-slide reveal" data-delay="3" data-index="04">
           <img src="assets/product-sun.jpg" alt="Golden light" width="700" height="900" loading="lazy">
           <figcaption>Golden hour</figcaption>
         </figure>
-        <figure class="gallery-slide reveal" data-delay="4">
+        <figure class="gallery-slide reveal" data-delay="4" data-index="05">
           <img src="assets/about-pool.jpg" alt="Resort" width="700" height="900" loading="lazy">
           <figcaption>Resort</figcaption>
         </figure>
@@ -389,6 +435,7 @@
         </div>
         <div class="reviews-slider">
           <article class="review-card reveal">
+            <span class="review-quote-mark" aria-hidden="true">"</span>
             <div class="stars" aria-label="5 stars">★★★★★</div>
             <blockquote>Ordered through WhatsApp and received it the next morning. Genuine product — the tan developed exactly as expected.</blockquote>
             <footer>
@@ -397,6 +444,7 @@
             </footer>
           </article>
           <article class="review-card featured reveal" data-delay="1">
+            <span class="review-quote-mark" aria-hidden="true">"</span>
             <div class="stars" aria-label="5 stars">★★★★★</div>
             <blockquote>Reliable seller. I've ordered the browning lotion twice now and both times the product was authentic and well packaged.</blockquote>
             <footer>
@@ -405,6 +453,7 @@
             </footer>
           </article>
           <article class="review-card reveal" data-delay="2">
+            <span class="review-quote-mark" aria-hidden="true">"</span>
             <div class="stars" aria-label="5 stars">★★★★★</div>
             <blockquote>The complete set is worth it. Delivery was fast to Hawally and the seller confirmed everything before sending.</blockquote>
             <footer>
@@ -498,10 +547,10 @@
   </a>
 
   <script type="module">
-    import { initLoaderWave } from './loader-wave.js?v=14';
+    import { initLoaderWave } from './loader-wave.js?v=15';
     window.setLoaderProgress = initLoaderWave();
   </script>
-  <script src="app.js?v=14"></script>
-  <script type="module" src="scene-3d.js?v=14"></script>
+  <script src="app.js?v=15"></script>
+  <script type="module" src="scene-3d.js?v=15"></script>
 </body>
 </html>
